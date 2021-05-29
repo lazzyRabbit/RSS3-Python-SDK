@@ -1,9 +1,9 @@
 import sys
-from types import rss_type
-from stroge import *
+from src.types import rss_type
+from src.stroge import *
 
 # 设定本地存储 
-class RSS3 :
+class RSS3Interface :
     def __init_(self) :
         pass
 

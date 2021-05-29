@@ -88,5 +88,6 @@ class IRSS3Items(IRSS3Base) :
 #########################################
 
 class IRSS3List :
-    pass
+    def __init_(self) :
+        pass
 
