@@ -15,7 +15,8 @@ class IRSS3Context() :
         self.list_next = list_next
 
 class IRSS3Item():
-    def __init_(self, authors = [], title = None, summary = None, tags = [], date_published = None, date_modified = None, type = None, upstream = None, contents = [], a_contexts = [], signature = None) :
+    def __init_(self, id = None, authors = [], title = None, summary = None, tags = [], date_published = None, date_modified = None, type = None, upstream = None, contents = [], a_contexts = [], signature = None) :
+        self.id = id
         self.authors = authors
         self.title = title
         self.summary = summary
@@ -67,10 +68,10 @@ class IRSS3Backlink() :
         self.next = next
 
 class IRSS3Asset() :
-    def __init_(self, ) :
-        self.type = None
-        self.tags = []
-        self.content = None
+    def __init_(self, type = None, tags = [], content = None) :
+        self.type = type
+        self.tags = tags
+        self.content = content
 
 class IRSS3(IRSS3Base):
     def __init_(self, id = None, a_version = 'rss3.io/version/v0.1.0', date_created = 0, date_updated = 0, signature = None, \

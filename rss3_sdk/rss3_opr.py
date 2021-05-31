@@ -1,5 +1,7 @@
 import sys
 import json
+import until
+import config
 import file_stroge
 import urllib.request
 from type import rss_type, inn_type
@@ -43,8 +45,22 @@ class RSS3 :
         self.__file_stroge.patchFile(self.__address)
     
     def itemPost(self, inn_item) :
+        date = until.get_datetime_isostring()
+        irss3 = self.__file_stroge.getFile(self.__address)
+        if irss3 == None :
+            return False
         
         # 增加新的文件并存储到本地
+        old_top_list_id = irss3.
+
+        new_item_id = self.__address + '-item-' + 
+        new_item = rss_type.IRSS3Item(id = new_item_id, authors = self.__address, date_published = date, date_modified = date)
+        # item.signature = this.sign(item)
+
+
+
+        irss3.date_updated = date
+        self.__file_stroge.patchFile(self.__address)
         pass
 
     def itemsPatch(self, inn_item, file_id) :
@@ -96,6 +112,7 @@ class RSS3 :
                 pass
         pass
 
-    def sign(self) :
-        # 实际上是他妈的EthCrypto.sign一个封装
+    def sign(self, dict) :
+        # message = json.dump(until.remove_not_sign_properties(dict))
+        # EthCrypto.sign(privatekey, EthCrypto.hash.keccak256(message))
         pass
