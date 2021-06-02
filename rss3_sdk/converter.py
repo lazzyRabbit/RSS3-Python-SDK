@@ -1,4 +1,3 @@
-import copy
 from marshmallow import Schema, fields, ValidationError
 
 # json converter
@@ -88,28 +87,3 @@ class IRSS3ListSchema() :
     
     list = fields.List(fields.String, attribute = 'list')
     next = fields.String(attribute = 'next')
-
-# inn converter
-#########################################
-
-def IInnContentsDeepCopy2Content(inn_content, i_rss3_contetnt) :
-    i_rss3_contetnt.address = copy.deepcopy(inn_item.address)
-    i_rss3_contetnt.mime_type = copy.deepcopy(inn_item.mime_type)
-    i_rss3_contetnt.name = copy.deepcopy(inn_item.name)
-    i_rss3_contetnt.tags = copy.deepcopy(inn_item.tags)
-    i_rss3_contetnt.duration_in_seconds = copy.deepcopy(inn_item.duration_in_seconds)
-
-def IInnItemDeepCopy2IRSS3Item(inn_item, i_rss3_item) :
-    i_rss3_item.id = copy.deepcopy(inn_item.id)
-    i_rss3_item.authors = copy.deepcopy(inn_item.authors)
-    i_rss3_item.title = copy.deepcopy(inn_item.title)
-    i_rss3_item.summary = copy.deepcopy(inn_item.summary)
-    i_rss3_item.tags = copy.deepcopy(inn_item.tags)
-    i_rss3_item.date_published = copy.deepcopy(inn_item.date_published)
-    i_rss3_item.date_modified = copy.deepcopy(inn_item.date_modified)
-
-    i_rss3_item.type = copy.deepcopy(inn_item.type)
-    i_rss3_item.upstream = copy.deepcopy(inn_item.upstream)
-
-    
-    pass
