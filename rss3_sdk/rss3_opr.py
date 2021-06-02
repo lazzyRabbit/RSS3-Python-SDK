@@ -64,8 +64,19 @@ class RSS3 :
         pass
 
     def itemsPatch(self, inn_item, file_id) :
-
+        if inn_item == None or file_id == None :
+            return None
         # 修改文件并存储到本地
+        l_file = self.__file_stroge.getFile(file_id)
+        if l_file == None or type(l_file) != IRSS3 or type(l_file) != IRSS3Items:
+            return None
+
+        try:
+            index = file.items.index(inn_item.id)
+        except IndexError :
+            return None
+
+        item
         pass
 
     def getFile(self, file_id) :
@@ -75,6 +86,7 @@ class RSS3 :
         try:
             response = urllib.request.urlopen(fileGetUrlm, method='GET')
             # 校验拉取的文件
+
             # 将文件存储在本地
         except urllib.error.HTTPError as e:
             # 如果错误返回404
@@ -116,3 +128,11 @@ class RSS3 :
         # message = json.dump(until.remove_not_sign_properties(dict))
         # EthCrypto.sign(privatekey, EthCrypto.hash.keccak256(message))
         pass
+
+    def __getRSS3Obj(self, file_id) :
+        if file_id.find('-items-') != -1 :
+            return type.rss_type.IRSS3Items()
+        elif file_id.find('-list-') != -1 :
+            return type.rss_type.IRSS3List()
+        else :
+            return type.rss_type.IRSS3()
