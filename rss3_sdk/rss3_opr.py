@@ -45,29 +45,37 @@ class RSS3 :
         self.__file_stroge.patchFile(self.__address)
     
     def itemPost(self, inn_item) :
-        date = until.get_datetime_isostring()
+        now_date = until.get_datetime_isostring()
         irss3 = self.__file_stroge.getFile(self.__address)
         if irss3 == None :
             return None
 
-        if
-        id_suffix = 0
-        if len(irss3.item) != 0 :
-            old_top_id_suffix_str = irss3.items[0].id.split('-',2)
-            id_suffix = int(old_top_id_suffix_str) + 1
-        new_item_id = self.__address + '-item-' + id_suffix
-            return False
+        new_item = rss_type.IRSS3()
+        new_item.set_patch_date(inn_item)
+        new_item.date_published = now_date
+        new_item.date_modified = now_date
+        # 这里要做个转换，转换成sign可处理的dict
+        # 
+        #new_item.signature = sign()
 
-        # 增加新的文件并存储到本地
-        old_top_list_id = irss3.
+        if irss3.items.length() + 1 <= config.conf["itemPageSize"] :
+            id_suffix = 0
+            if len(irss3.item) != 0 :
+                old_top_id_suffix_str = irss3.items[0].id.split('-',2)
+                try :
+                    id_suffix = int(old_top_id_suffix_str) + 1
+                except Exception as e :
+                    # log(id_suffix is error)
+                    return None
+            new_item_id = self.__address + '-item-' + str(id_suffix)
+            new_item.id = new_item_id
+            irss3.items.insert(0, new_item)
+        else :
 
-        new_item = rss_type.IRSS3Item(id = new_item_id, authors = self.__address, date_published = date, date_modified = date)
-        # item.signature = this.sign(item)
 
 
 
-        irss3.date_updated = date
-        self.__file_stroge.patchFile(self.__address)
+
         pass
 
     def itemsPatch(self, inn_item, file_id) :
@@ -76,9 +84,6 @@ class RSS3 :
 
         irss3 = self.__file_stroge.getFile(file_id)
         if irss3 == None or type(irss3) != rss_type.IRSS3 or type(irss3) != rss_type.IRSS3Items:
-        # 修改文件并存储到本地
-        l_file = self.__file_stroge.getFile(file_id)
-        if l_file == None or type(l_file) != IRSS3 or type(l_file) != IRSS3Items:
             return None
 
         try:
@@ -90,7 +95,7 @@ class RSS3 :
         irss3.date_modified = until.get_datetime_isostring()
         self.__file_stroge.patchFile(file_id)
 
-        return l_file.items[index]
+        return irss3.items[index]
 
     def getFile(self, file_id) :
         if file_id == None :
