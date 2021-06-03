@@ -1,2 +1,2 @@
-marshmallow == 3.12.1
-eth-utils == 1.9.5
+marshmallow==3.12.1
+eth-utils==1.9.5
