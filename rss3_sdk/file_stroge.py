@@ -3,16 +3,16 @@ class FileStroge :
         self.file_stroge_map = {}
         self.file_update_tag = {}
     
-    def getFile(file_id) :
-        return fileStrogeMap.get(file_id)
+    def getFile(self, file_id) :
+        return self.file_stroge_map.get(file_id)
 
-    def patchFile(file_id) :
+    def patchFile(self, file_id) :
         self.file_stroge_map[file_id] = file
         self.file_update_tag.add(file_id)
 
-    def updateFile(file_id) :
+    def updateFile(self, file_id) :
         self.file_update_tag.discard(file_id)
 
-    def updateAll() :
-        self.fileUpdateTag.clear()
+    def updateAll(self) :
+        self.file_update_tag.clear()
         pass

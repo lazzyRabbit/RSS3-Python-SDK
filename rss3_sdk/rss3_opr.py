@@ -1,10 +1,10 @@
 import sys
 import json
-import until
-import config
-import file_stroge
+from . import until
+from . import config
+from .import file_stroge
 import urllib.request
-from type import rss_type
+from .type import rss_type
 
 class RSS3Option() :
     def __init__(self, endpoint = None, private_key = None, fill_update_callback = None) :
@@ -58,20 +58,22 @@ class RSS3 :
         # 
         #new_item.signature = sign()
 
+        id_suffix = 0
+        if len(irss3.item) != 0 :
+            old_top_id_suffix_str = irss3.items[0].id.split('-',2)
+            try :
+                id_suffix = int(old_top_id_suffix_str) + 1
+            except Exception as e :
+                # log(id_suffix is error)
+                return None
+        new_item_id = self.__address + '-item-' + str(id_suffix)
+        new_item.id = new_item_id
+
         if irss3.items.length() + 1 <= config.conf["itemPageSize"] :
-            id_suffix = 0
-            if len(irss3.item) != 0 :
-                old_top_id_suffix_str = irss3.items[0].id.split('-',2)
-                try :
-                    id_suffix = int(old_top_id_suffix_str) + 1
-                except Exception as e :
-                    # log(id_suffix is error)
-                    return None
-            new_item_id = self.__address + '-item-' + str(id_suffix)
-            new_item.id = new_item_id
             irss3.items.insert(0, new_item)
         else :
-
+            
+            
 
 
 
