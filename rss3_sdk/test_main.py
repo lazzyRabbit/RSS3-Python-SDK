@@ -12,5 +12,5 @@ if __name__ == '__main__':
     # index.test_main.test()
 
     test_map = {}
-    ele = test_map['true']
-    print(ele)
+    # ele = test_map['true']
+    # print(ele)

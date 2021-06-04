@@ -66,7 +66,7 @@ class IRSS3Schema():
     profile = fields.Nested(IRSS3ProfileSchema, attribute = 'profile')
 
     items = fields.Nested(IRSS3ItemSchema, attribute = 'item')
-    items_next = fields.String(items_next)
+    items_next = fields.String(attribute = 'items_next')
 
     links = fields.List(fields.Nested(IRSS3BacklinkSchema, attribute = 'links'))
     a_backlinks = fields.List(fields.Nested(IRSS3BacklinkSchema, attribute = '@backlinks'))
@@ -80,7 +80,7 @@ class IRSS3ItemsSchema() :
     signature = fields.String(attribute = 'signature')
     
     items = fields.Nested(IRSS3ItemSchema, attribute = 'item')
-    items_next = fields.String(items_next)
+    items_next = fields.String(attribute = 'items_next')
 
 class IRSS3ListSchema() :
     id = fields.String(attribute = 'id')

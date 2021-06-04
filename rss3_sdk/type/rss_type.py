@@ -92,7 +92,7 @@ class IRSS3Asset() :
 class IRSS3(IRSS3Base):
     def __init__(self, id = None, a_version = 'rss3.io/version/v0.1.0', date_created = 0, date_updated = 0, signature = None, \
                 profile = None, items = [], items_next = None, links = [], a_backlinks = [], assets = []) :
-        super().__init_(id, date_created, date_updated, signature)
+        super().__init__(id, a_version, date_created, date_updated, signature)
 
         self.profile = profile
 
@@ -107,7 +107,7 @@ class IRSS3(IRSS3Base):
 class IRSS3Items(IRSS3Base) :
     def __init__(self, id = None, a_version = 'rss3.io/version/v0.1.0', date_created = 0, date_updated = 0, signature = None, \
                 items = [], items_next = None) :
-        super().__init_(id, date_created, date_updated, signature)
+        super().__init__(id, a_version, date_created, date_updated, signature)
         self.items = items
         self.items_next = items_next
 
@@ -119,4 +119,3 @@ class IRSS3List :
         
         self.list = list
         self.next = next
-

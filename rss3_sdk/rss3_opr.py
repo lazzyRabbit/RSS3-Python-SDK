@@ -1,10 +1,11 @@
 import sys
 import json
+import urllib.request
 from . import until
 from . import config
-from .import file_stroge
-import urllib.request
+from . import file_stroge
 from .type import rss_type
+
 
 class RSS3Option() :
     def __init__(self, endpoint = None, private_key = None, fill_update_callback = None) :
@@ -72,13 +73,31 @@ class RSS3 :
         if irss3.items.length() + 1 <= config.conf["itemPageSize"] :
             irss3.items.insert(0, new_item)
         else :
-            
-            
+            new_list = []
+            new_list.append(new_item)
+            old_iterms_id_suffix = 0
+            if  irss3.items != None :
+                try:
+                    old_iterms_id_suffix = int(irss3.items[0].id.split('-',2))
+                except Exception as e:
+                    # log(id_suffix is error)
+                    return None
+            new_iterms_id = self.__address + '-iterms-' + str(old_iterms_id_suffix + 1)
+            irss3_iterms = rss_type.IRSS3Items(id = new_iterms_id,
+                                               a_version = 'rss3.io/version/v0.1.0',
+                                               date_createds = now_date,
+                                               signature = '',
+                                               items = new_list,
+                                               items_next = irss3.items_next)
 
+            irss3.items = new_list
+            irss3.items_next = new_item.id
+            self.__file_stroge.strogeFile(new_item.id, irss3_iterms)
 
+        irss3.date_updated = now_date
+        self.__file_stroge.patchFile(self.__address)
 
-
-        pass
+        return new_item
 
     def itemsPatch(self, inn_item, file_id) :
         if inn_item == None or file_id == None :
@@ -102,9 +121,9 @@ class RSS3 :
     def getFile(self, file_id) :
         if file_id == None :
             return False
-        fileGetUrl = self.option + '/files/' + file_id
+        file_get_url = self.option + '/files/' + file_id
         try:
-            response = urllib.request.urlopen(fileGetUrl, method='GET')
+            response = urllib.request.urlopen(file_get_url, method='GET')
             # 校验拉取的文件
 
             # 将文件存储在本地
@@ -120,13 +139,13 @@ class RSS3 :
         if l_file == None :
             return False
         
-        fileGetUrl = self.option + '/delete'
+        file_get_url = self.option + '/delete'
         signature = l_file.signature
         del_content[signature] = signature
         params = json.dump(del_content)
 
         try:
-            response = urllib.request.urlopen(fileGetUrl, data=params, method='POST')
+            response = urllib.request.urlopen(file_get_url, data=params, method='POST')
         except urllib.error.HTTPError as e:
             if e.code == 404 :
                 pass
@@ -135,18 +154,13 @@ class RSS3 :
     
     def updateFile(self) :
         # 这里要加一些将内部类型转换成json的操作
-        fileGetUrl = self.option + '/update'
+        file_get_url = self.option + '/update'
 
         try:
-            response = urllib.request.urlopen(fileGetUrl, data=params, method='POST')
+            response = urllib.request.urlopen(file_get_url, data=params, method='POST')
         except urllib.error.HTTPError as e:
             if e.code == 404 :
                 pass
-        pass
-
-    def sign(self, dict) :
-        # message = json.dump(until.remove_not_sign_properties(dict))
-        # EthCrypto.sign(privatekey, EthCrypto.hash.keccak256(message))
         pass
 
     def __getRSS3Obj(self, file_id) :

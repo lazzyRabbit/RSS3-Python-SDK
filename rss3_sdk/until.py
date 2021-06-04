@@ -1,5 +1,7 @@
+import json
 import copy
 from datetime import datetime
+from eth_utils import crypto
 
 def get_datetime_isostring() :
     try:
@@ -16,4 +18,7 @@ def remove_not_sign_properties(data) :
             del data[key]
     return new_data
 
-
+def sign(dict, private_key) :
+    message = json.dump(until.remove_not_sign_properties(dict))
+    crypto.keccak(text = message)
+    pass
