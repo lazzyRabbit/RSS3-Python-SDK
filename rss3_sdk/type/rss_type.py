@@ -89,7 +89,7 @@ class IRSS3Asset() :
         self.tags = tags
         self.content = content
 
-class IRSS3(IRSS3Base):
+class IRSS3Index(IRSS3Base):
     def __init__(self, id = None, a_version = 'rss3.io/version/v0.1.0', date_created = 0, date_updated = 0, signature = None, \
                 profile = None, items = [], items_next = None, links = [], a_backlinks = [], assets = []) :
         super().__init__(id, a_version, date_created, date_updated, signature)

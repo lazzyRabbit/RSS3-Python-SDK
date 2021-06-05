@@ -1,9 +1,11 @@
+import resource
 import sys
 import json
-import urllib.request
+import urllib3
 from . import until
 from . import config
 from . import file_stroge
+from . import converter
 from .type import rss_type
 
 
@@ -14,11 +16,12 @@ class RSS3Option() :
         self.fill_update_callback = fill_update_callback
         
 # 设定本地存储 
-class RSS3 :
+class RSS3Handle :
     def __init__(self, option = None) :
         self.__option = option
         self.__file_stroge = file_stroge.FileStroge()
         self.__address = None
+        self.__http = None
 
     def init(self) :
         if self.__option == None or self.__option.endpoint == None :
@@ -38,6 +41,7 @@ class RSS3 :
             # self.__file_stroge.updateFile(self.__address)
             # fill_update_callback()
             pass
+        self.__http = urllib3.PoolManager()
         return True
 
     def profilePatch(self, profile) :
@@ -120,19 +124,33 @@ class RSS3 :
 
     def getFile(self, file_id) :
         if file_id == None :
-            return False
-        file_get_url = self.option + '/files/' + file_id
+            print("file id is none")
+            return
+        file_get_url = self.__option.endpoint + file_id
+        print("file_get_url : %s" % file_get_url)
         try:
-            response = urllib.request.urlopen(file_get_url, method='GET')
-            # 校验拉取的文件
+            response = self.__http.request(method = 'GET', url = file_get_url)
+            if response.status == 200 :
+                resp_dict = json.loads(response.data.decode())
+                print(resp_dict)
+                # 校验拉取的文件
+                
+                # 将文件存储在本地
+                irss3_index_schema = converter.IRSS3IndexSchema()
+                result = irss3_index_schema.dump(resp_dict)
+                print(result)
+            elif response.status == 404 :
+                now_date = until.get_datetime_isostring()
+                new_rss3obj = self.__getRSS3Obj(file_id)
+                new_rss3obj.date_created = now_date
+                new_rss3obj.date_updated = now_date
+                new_rss3obj.signature = ''
+            else :
+                print('error code: %d' % response.status)
+        except urllib3.exceptions.HTTPError as e:
+            print ("error reason :%s" % e)
 
-            # 将文件存储在本地
-        except urllib.error.HTTPError as e:
-            # 如果错误返回404
-            if e.code == 404 :
-                pass
-
-    def delFile(self, file_id) :
+    def delPerson(self, privateKey) :
         if file_id == None :
             return False
         l_file = self.fileStroge.getFile(file_id)
@@ -140,33 +158,32 @@ class RSS3 :
             return False
         
         file_get_url = self.option + '/delete'
-        signature = l_file.signature
-        del_content[signature] = signature
-        params = json.dump(del_content)
+
 
         try:
             response = urllib.request.urlopen(file_get_url, data=params, method='POST')
         except urllib.error.HTTPError as e:
             if e.code == 404 :
                 pass
-        
-        pass
-    
+            else :
+                pass
+
     def updateFile(self) :
         # 这里要加一些将内部类型转换成json的操作
-        file_get_url = self.option + '/update'
+        file_get_url = self.option + '/put'
 
         try:
             response = urllib.request.urlopen(file_get_url, data=params, method='POST')
         except urllib.error.HTTPError as e:
             if e.code == 404 :
                 pass
-        pass
+            else :
+                pass
 
     def __getRSS3Obj(self, file_id) :
         if file_id.find('-items-') != -1 :
-            return type.rss_type.IRSS3Items()
+            return type.rss_type.IRSS3Items(id = file_id)
         elif file_id.find('-list-') != -1 :
-            return type.rss_type.IRSS3List()
+            return type.rss_type.IRSS3List(id = file_id)
         else :
-            return type.rss_type.IRSS3()
+            return type.rss_type.IRSS3(id = file_id)

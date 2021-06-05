@@ -2,7 +2,7 @@ from marshmallow import Schema, fields, ValidationError
 
 # json converter
 #########################################
-class IRSS3ContentSchema() :
+class IRSS3ContentSchema(Schema) :
     address = fields.List(fields.String, attribute = 'address')
     mime_type = fields.String(attribute = 'mime_type')
     name = fields.String(attribute = 'name')
@@ -10,12 +10,12 @@ class IRSS3ContentSchema() :
     size_in_bytes = fields.String(attribute = 'size_in_bytes')
     duration_in_seconds = fields.String(attribute = 'duration_in_seconds')
 
-class IRSS3ContextSchema() :
+class IRSS3ContextSchema(Schema) :
     type = fields.String(attribute = 'type')
     list = fields.List(fields.String, attribute = 'list')
     list_next = fields.String(attribute = 'list_next')
 
-class IRSS3ItemSchema():
+class IRSS3ItemSchema(Schema):
     id = fields.String(attribute = 'id')
     authors = fields.String(attribute = 'authors')
     title = fields.String(attribute = 'title')
@@ -32,31 +32,31 @@ class IRSS3ItemSchema():
 
     signature = fields.String(attribute = 'signature')
 
-class IRSS3ProfileSchema() :
+class IRSS3ProfileSchema(Schema) :
     name = fields.String(attribute = 'name')
     avatar = fields.String(attribute = 'avatar')
     bio = fields.String(attribute = 'bio')
     tags = fields.List(fields.String, attribute = 'tags')
     signature = fields.String(attribute = 'signature')
 
-class IRSS3LinkSchema() :
+class IRSS3LinkSchema(Schema) :
     type = fields.String(attribute = 'type')
     tags = fields.List(fields.String, attribute = 'tags')
     list = fields.List(fields.String, attribute = 'list')
     list_next = fields.String(attribute = 'list_next')
     signature = fields.String(attribute = 'signature')
 
-class IRSS3BacklinkSchema() :
+class IRSS3BacklinkSchema(Schema) :
     type = fields.String(attribute = 'type')
     list = fields.List(fields.String, attribute = 'list')
     list_next = fields.String(attribute = 'list_next')
 
-class IRSS3AssetSchema() :
+class IRSS3AssetSchema(Schema) :
     type = fields.String(attribute = 'type')
     tags = fields.List(fields.String, attribute = 'tags')
     content = fields.String(attribute = 'content')
 
-class IRSS3Schema():
+class IRSS3IndexSchema(Schema):
     id = fields.String(attribute = 'id')
     a_version = fields.String(attribute = '@version')
     date_created = fields.String(attribute = 'date_created')
@@ -72,7 +72,7 @@ class IRSS3Schema():
     a_backlinks = fields.List(fields.Nested(IRSS3BacklinkSchema, attribute = '@backlinks'))
     assets = fields.List(fields.Nested(IRSS3AssetSchema, attribute = 'assets'))
 
-class IRSS3ItemsSchema() :
+class IRSS3ItemsSchema(Schema) :
     id = fields.String(attribute = 'id')
     a_version = fields.String(attribute = '@version')
     date_created = fields.String(attribute = 'date_created')
@@ -82,7 +82,7 @@ class IRSS3ItemsSchema() :
     items = fields.Nested(IRSS3ItemSchema, attribute = 'item')
     items_next = fields.String(attribute = 'items_next')
 
-class IRSS3ListSchema() :
+class IRSS3ListSchema(Schema) :
     id = fields.String(attribute = 'id')
     
     list = fields.List(fields.String, attribute = 'list')
