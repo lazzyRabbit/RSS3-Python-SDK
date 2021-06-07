@@ -72,10 +72,10 @@ class IRSS3Base :
 class IRSS3Link() :
     def __init__(self, type = None, tags = [], list = [], list_next = None, signature = None) :
         self.type = type
-        self.tags = tage
+        self.tags = tags
         self.list = list
-        self.list_next = None
-        self.signature = None
+        self.list_next = list_next
+        self.signature = signature
 
 class IRSS3Backlink() :
     def __init__(self, type = None, list = [], next = None) :
@@ -99,9 +99,9 @@ class IRSS3Index(IRSS3Base):
         self.items = items
         self.items_next = items_next
 
-        self.links = links             # IRSS3Link
+        self.links = links                    # IRSS3Link
         self.a_backlinks = a_backlinks        # IRSS3Backlink
-        self.assets = assets          # IRSS3Asset
+        self.assets = assets                  # IRSS3Asset
 
 #########################################
 class IRSS3Items(IRSS3Base) :

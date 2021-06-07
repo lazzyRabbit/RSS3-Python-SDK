@@ -137,8 +137,8 @@ class RSS3Handle :
                 
                 # 将文件存储在本地
                 irss3_index_schema = converter.IRSS3IndexSchema()
-                result = irss3_index_schema.dump(resp_dict)
-                print(result)
+                irss3_index = irss3_index_schema.load(resp_dict)
+                print("dict : %r" % irss3_index.__dict__)
             elif response.status == 404 :
                 now_date = until.get_datetime_isostring()
                 new_rss3obj = self.__getRSS3Obj(file_id)
