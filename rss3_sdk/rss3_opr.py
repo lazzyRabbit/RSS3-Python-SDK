@@ -1,13 +1,14 @@
-import resource
 import sys
 import json
 import urllib3
+import resource
+import hexbytes
 from . import until
 from . import config
 from . import file_stroge
 from . import converter
 from .type import rss_type
-
+from eth_keys import keys
 
 class RSS3Option() :
     def __init__(self, endpoint = None, private_key = None, fill_update_callback = None) :
@@ -21,16 +22,16 @@ class RSS3Handle :
         self.__option = option
         self.__file_stroge = file_stroge.FileStroge()
         self.__address = None
-        self.__http = None
+        self.__http = urllib3.PoolManager()
 
     def init(self) :
         if self.__option == None or self.__option.endpoint == None :
             return False
         if self.__option.private_key != None :
-            # self.__address = EthCrypto.publicKeyByPrivateKey
-            # irss3 = IRSS3(id = self.__address)
-            # self.getFile(self.__address)
-            # fill_update_callback()
+            pk = keys.PrivateKey(hexbytes.HexBytes(self.__option.private_key))
+            self.__address = pk.public_key.to_checksum_address()
+            self.getFile(self.__address)
+            self.__option.fill_update_callback()
             pass
         else :
             # keys = EthCrypto.createIdentity();
@@ -41,7 +42,6 @@ class RSS3Handle :
             # self.__file_stroge.updateFile(self.__address)
             # fill_update_callback()
             pass
-        self.__http = urllib3.PoolManager()
         return True
 
     def profilePatch(self, profile) :
@@ -122,6 +122,10 @@ class RSS3Handle :
 
         return irss3.items[index]
 
+    # test
+    def get_inner_stroge(self):
+        return self.__file_stroge
+
     def getFile(self, file_id) :
         if file_id == None :
             print("file id is none")
@@ -132,9 +136,15 @@ class RSS3Handle :
             response = self.__http.request(method = 'GET', url = file_get_url)
             if response.status == 200 :
                 resp_dict = json.loads(response.data.decode())
+                # test
                 print(resp_dict)
+                file_id = resp_dict['id']
+                if file_id == None :
+                    print("can not find irss3 id")
+                    return
                 # 校验拉取的文件
-                
+                irss3_content = self.__getRSS3Obj(file_id)
+
                 # 将文件存储在本地
                 irss3_index_schema = converter.IRSS3IndexSchema()
                 irss3_index = irss3_index_schema.load(resp_dict)
@@ -150,40 +160,58 @@ class RSS3Handle :
         except urllib3.exceptions.HTTPError as e:
             print ("error reason :%s" % e)
 
-    def delPerson(self, privateKey) :
-        if file_id == None :
-            return False
-        l_file = self.fileStroge.getFile(file_id)
-        if l_file == None :
-            return False
-        
+    def delPerson(self) :
+        now_date = until.get_datetime_isostring()
+        del_signature = until.sign()
         file_get_url = self.option + '/delete'
-
+        del_fields = {
+            "signature": del_signature,
+            "date": now_date
+        }
+        # 这里要测一下需不需要转成json
 
         try:
-            response = urllib.request.urlopen(file_get_url, data=params, method='POST')
-        except urllib.error.HTTPError as e:
-            if e.code == 404 :
-                pass
+            response = self.__http.request(method = 'POST',
+                                           url = file_get_url,
+                                           fields = del_fields)
+            if response.status == 200:
+                return True
             else :
-                pass
+                print("i am not know the status: %d" % response.status)
+                return False
+        except urllib3.exceptions.HTTPError as e:
+            print("error reason :%s" % e)
 
     def updateFile(self) :
-        # 这里要加一些将内部类型转换成json的操作
+        now_date = until.get_datetime_isostring()
+        del_signature = until.sign()
         file_get_url = self.option + '/put'
+        content_files_dict = self.__file_stroge.getAllUpdateFiles()
+
+        content_files_json_str = s
+
+        update_fields = {
+
+        }
 
         try:
-            response = urllib.request.urlopen(file_get_url, data=params, method='POST')
-        except urllib.error.HTTPError as e:
-            if e.code == 404 :
-                pass
-            else :
-                pass
+            response = self.__http.request(method = 'POST',
+                                           url = file_get_url,
+                                           fields = update_fields)
+            if response.status == 200:
+                return True
+            else:
+                print("i am not know the status: %d" % response.status)
+                return False
+        except urllib3.exceptions.HTTPError as e:
+            print("error reason :%s" % e)
 
     def __getRSS3Obj(self, file_id) :
+        if file_id == None :
+            return None
         if file_id.find('-items-') != -1 :
-            return type.rss_type.IRSS3Items(id = file_id)
+            return rss_type.IRSS3Items(id = file_id)
         elif file_id.find('-list-') != -1 :
-            return type.rss_type.IRSS3List(id = file_id)
+            return rss_type.IRSS3List(id = file_id)
         else :
-            return type.rss_type.IRSS3(id = file_id)
+            return rss_type.IRSS3Index(id = file_id)
