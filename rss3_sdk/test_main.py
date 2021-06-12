@@ -1,9 +1,10 @@
 import sys
 import sha3
 import hexbytes
-from rss3_sdk import rss3_opr
+from rss3_sdk import rss3_handle
 from rss3_sdk import until
 from eth_keys import keys, datatypes
+from eth_account import account
 
 def fill_update_new_callback() :
     print("this is call back")
@@ -17,7 +18,7 @@ if __name__ == '__main__':
 
     # test for interface
 
-    # '''
+    '''
     option = rss3_opr.RSS3Option(endpoint = 'https://rss3-hub-playground-6raed.ondigitalocean.app/',
                                  private_key = '0x47e18d6c386898b424025cd9db446f779ef24ad33a26c499c87bb3d9372540ba',
                                  fill_update_callback = fill_update_new_callback)
@@ -36,12 +37,26 @@ if __name__ == '__main__':
     # rss3_inner_stroge.getFile()
 
     # print (test_dict)
-    # '''
+    '''
 
     # print("until: %s" % until.get_datetime_isostring())
 
+    # 生成count test
+    # curr_account = account.Account()
+    keyss = account.Account().create()
+    print(keyss.address)
+    print(type(keyss.address))
+    pk = hexbytes.HexBytes(keyss.key).hex()
+    print(pk)
+    print(type(pk))
+
+    pk2 = keys.PrivateKey(hexbytes.HexBytes(pk))
+    private_key = pk2.public_key.to_checksum_address()
+    print(pk2)
+    print(private_key)
+
     # 公私钥test
-    # '''
+    '''
     pk = '0x47e18d6c386898b424025cd9db446f779ef24ad33a26c499c87bb3d9372540ba'
     pk = keys.PrivateKey(hexbytes.HexBytes(pk))
     private_key = pk.public_key.to_checksum_address()
@@ -56,4 +71,4 @@ if __name__ == '__main__':
     # b_signature = bytes(signature.to_hex(), encoding='utf-8')
     curr_eth_sign = datatypes.Signature(hexbytes.HexBytes(signature.to_hex()))
     print(curr_eth_sign)
-    # '''
+    '''

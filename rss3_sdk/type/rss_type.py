@@ -34,20 +34,6 @@ class IRSS3Item():
 
         self.signature = signature
 
-    def set_patch_date(self, inn_item) :
-        self.id = copy.deepcopy(inn_item.id)
-        self.authors = copy.deepcopy(inn_item.authors)
-        self.title = copy.deepcopy(inn_item.title)
-        self.summary = copy.deepcopy(inn_item.summary)
-        self.tags = copy.deepcopy(inn_item.tags)
-        self.date_published = copy.deepcopy(inn_item.date_published)
-        self.date_modified = copy.deepcopy(inn_item.date_modified)
-
-        self.type = copy.deepcopy(inn_item.type)
-        self.upstream = copy.deepcopy(inn_item.upstream)
-
-        self.contents = inn_item.contents
-
 #########################################
 
 class IRSS3Profile :
