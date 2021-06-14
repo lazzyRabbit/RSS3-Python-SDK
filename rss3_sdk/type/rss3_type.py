@@ -3,7 +3,7 @@ import copy
 #########################################
 class IRSS3Content():
     def __init__(self, address = [], mime_type = None, name = None, tags = [], size_in_bytes = None, duration_in_seconds = None) :   
-        self.address = []
+        self.address = address
         self.mime_type = mime_type
         self.name = name
         self.tags = tags

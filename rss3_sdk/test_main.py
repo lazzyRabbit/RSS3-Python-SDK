@@ -41,6 +41,7 @@ if __name__ == '__main__':
 
     # print("until: %s" % until.get_datetime_isostring())
 
+    '''
     # 生成count test
     # curr_account = account.Account()
     keyss = account.Account().create()
@@ -54,6 +55,7 @@ if __name__ == '__main__':
     private_key = pk2.public_key.to_checksum_address()
     print(pk2)
     print(private_key)
+    '''
 
     # 公私钥test
     '''
@@ -72,3 +74,9 @@ if __name__ == '__main__':
     curr_eth_sign = datatypes.Signature(hexbytes.HexBytes(signature.to_hex()))
     print(curr_eth_sign)
     '''
+
+    pk2 = keys.PrivateKey(hexbytes.HexBytes('0xa55afab0f35bdc00c1ac137a98d5d037609eeaead8ba930c4c3878e38630e38a'))
+    private_key = pk2.public_key.to_checksum_address()
+    print(pk2)
+    print(private_key)
+

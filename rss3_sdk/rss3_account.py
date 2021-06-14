@@ -2,16 +2,16 @@ import hexbytes
 from eth_keys import keys
 from eth_account import account
 
+# If the hexadecimal number is wrong, an exception will be thrown
 class RSS3Account :
     def __init__(self, private_key = None):
         self.private_key = private_key
         self.address = None
-        # 新账户，意味着去网上拉不到
+        # New account means that you can’t get it online
         self.new_account_tag = None
 
         if self.private_key != None :
-            pk = keys.PrivateKey(hexbytes.HexBytes(self.__option.private_key))
-            # 这里要到时候检查一下不是16位会不会抛出异常
+            pk = keys.PrivateKey(hexbytes.HexBytes(self.private_key))
             self.address = pk.public_key.to_checksum_address()
             self.new_account_tag = False
         else :
