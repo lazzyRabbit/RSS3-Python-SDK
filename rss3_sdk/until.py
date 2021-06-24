@@ -67,10 +67,8 @@ def check(irss3_data, personal_address) :
         return False
 
     irss3_json_msg = json.dumps(remove_not_sign_properties(irss3_data))
-    print("signature is %s" % irss3_data['signature'])
     curr_eth_sign = datatypes.Signature(hexbytes.HexBytes(irss3_data['signature']))
-    curr_address = curr_eth_sign.recover_public_key_from_msg(irss3_json_msg)
-    print("curr_address: %s" % curr_address)
+    curr_address = curr_eth_sign.recover_public_key_from_msg(irss3_json_msg) # 这里需要转换一下
     return curr_address == personal_address
 
 def get_rss3_obj(file_id) :

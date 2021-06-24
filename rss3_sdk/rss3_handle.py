@@ -106,7 +106,6 @@ class RSS3Handle :
 
         irss3_index.date_updated = now_date
         self._file_update_tag.add(self._rss3_account.address)
-        logging.info(self._file_update_tag)
 
         return new_item
 
@@ -151,13 +150,10 @@ class RSS3Handle :
             raise ValueError("File_id is invalid parameter")
 
         file_get_url = self._endpoint + file_id
-        logger.info("file_get_url : %s" % file_get_url)
         try:
             response = self._http.request(method = 'GET', url = file_get_url)
             if response.status == 200 :
                 resp_dict = json.loads(response.data.decode())
-                # test
-                logger.info(resp_dict)
                 file_id = resp_dict['id']
                 if file_id == None :
                     raise ValueError("Can't find file_id : %s" % file_id)
@@ -208,14 +204,12 @@ class RSS3Handle :
                 file.signature = until.sign(file_dict, self._rss3_account.private_key)
                 file_dict['signature'] = file.signature
                 contents.append(file_dict)
-        logger.info(contents)
 
         contents_dict = {
             "contents":contents
         }
         content_json_str = json.dumps(contents_dict)
-        logger.info("contents:%s" % content_json_str)
-# '''
+
         try:
             response = self._http.request(method = 'PUT',
                                           url = file_get_url,
@@ -224,7 +218,6 @@ class RSS3Handle :
             if response.status == 200:
                 self._file_update_tag.clear()
             elif response.data != None :
-                logger.info(response.data)
                 resp_dict = json.loads(response.data.decode())
                 if resp_dict != None :
                     raise exceptions.HttpError("Rss3 error code %d, Rss3 error result %s" % resp_dict['code'], resp_dict['message'])
@@ -234,4 +227,3 @@ class RSS3Handle :
                 raise exceptions.HttpError("Execute wrong network code: %d" % response.status)
         except urllib3.exceptions.HTTPError as e:
             raise exceptions.HttpError("Connect Error : %s" % e)
-# '''
