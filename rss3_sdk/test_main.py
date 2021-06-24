@@ -58,7 +58,7 @@ if __name__ == '__main__':
     '''
 
     # 公私钥test
-    '''
+    # '''
     pk = '0x47e18d6c386898b424025cd9db446f779ef24ad33a26c499c87bb3d9372540ba'
     pk = keys.PrivateKey(hexbytes.HexBytes(pk))
     private_key = pk.public_key.to_checksum_address()
@@ -69,14 +69,16 @@ if __name__ == '__main__':
     print(signature.to_hex())
     print(type(signature))
     print(type(signature.to_hex()))
-
+    ll = signature.to_hex()
     # b_signature = bytes(signature.to_hex(), encoding='utf-8')
-    curr_eth_sign = datatypes.Signature(hexbytes.HexBytes(signature.to_hex()))
+    temp_signature = '0x592fbfa29fc30a8e4f3e9bb61990deca35a3e2d826ec820a8202e5f5fa36668f3a164df304e555bf7ef367b19cec6786b143e2308812f38f1e64e2b44591d6eb1c'
+    curr_eth_sign = datatypes.Signature(hexbytes.HexBytes(temp_signature))
     print(curr_eth_sign)
-    '''
+    # '''
 
+    '''
     pk2 = keys.PrivateKey(hexbytes.HexBytes('0xa55afab0f35bdc00c1ac137a98d5d037609eeaead8ba930c4c3878e38630e38a'))
     private_key = pk2.public_key.to_checksum_address()
     print(pk2)
     print(private_key)
-
+    '''

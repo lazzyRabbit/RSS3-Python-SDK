@@ -63,14 +63,15 @@ def sign(irss3_data, private_key) :
     return eth_private_key.sign_msg(bytes_irss3_json_msg).to_hex()
 
 def check(irss3_data, personal_address) :
-    if irss3_data == None or irss3_data.signature == None or personal_address == None:
+    if irss3_data == None or type(irss3_data) != dict or irss3_data['signature'] == None or personal_address == None :
         return False
-    else :
-        irss3_json_msg = json.dumps(remove_not_sign_properties(irss3_data))
-        curr_eth_sign = datatypes.Signature(hexbytes.HexBytes(irss3_data.signature))
-        curr_address = curr_eth_sign.recover_public_key_from_msg(irss3_json_msg)
-        print("curr_address: %s" % curr_address)
-        return curr_address == personal_address
+
+    irss3_json_msg = json.dumps(remove_not_sign_properties(irss3_data))
+    print("signature is %s" % irss3_data['signature'])
+    curr_eth_sign = datatypes.Signature(hexbytes.HexBytes(irss3_data['signature']))
+    curr_address = curr_eth_sign.recover_public_key_from_msg(irss3_json_msg)
+    print("curr_address: %s" % curr_address)
+    return curr_address == personal_address
 
 def get_rss3_obj(file_id) :
     if file_id == None :

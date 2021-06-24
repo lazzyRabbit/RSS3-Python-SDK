@@ -163,13 +163,13 @@ class RSS3Handle :
                     raise ValueError("Can't find file_id : %s" % file_id)
 
                 # Verify the pulled file
-                irss3_content = until.get_rss3_obj(file_id)
-                check = until.check(irss3_content.__dict__,
+                # irss3_content = until.get_rss3_obj(file_id)
+                # irss3_content_dict = until.get_rss3_json_dict(irss3_content, 2)
+                # logger.info(irss3_content.__dict__)
+                logger.info(resp_dict)
+                check = until.check(resp_dict,
                                     file_id.split('-', 0))
-                if check == True :
-                    self._file_stroge_dict[file_id] = irss3_content
-                    logger.info(file_id)
-                else :
+                if check == False :
                     raise ValueError("The file_id %s signature does not match " % file_id)
 
                 # Store files locally
@@ -193,7 +193,7 @@ class RSS3Handle :
             raise exceptions.HttpError("Connect Error : %s" % e)
 
     def update_file(self) :
-        file_get_url = self._endpoint + '/put'
+        file_get_url = self._endpoint
         contents = []
 
         for file_name in self._file_update_tag :
@@ -223,7 +223,14 @@ class RSS3Handle :
                                           headers={"Content-Type": "application/json"})
             if response.status == 200:
                 self._file_update_tag.clear()
-            else:
+            elif response.data != None :
+                logger.info(response.data)
+                resp_dict = json.loads(response.data.decode())
+                if resp_dict != None :
+                    raise exceptions.HttpError("Rss3 error code %d, Rss3 error result %s" % resp_dict['code'], resp_dict['message'])
+                else :
+                    raise exceptions.HttpError("Execute wrong network code: %d" % response.status)
+            else :
                 raise exceptions.HttpError("Execute wrong network code: %d" % response.status)
         except urllib3.exceptions.HTTPError as e:
             raise exceptions.HttpError("Connect Error : %s" % e)
