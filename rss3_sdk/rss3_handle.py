@@ -63,8 +63,6 @@ class RSS3Handle :
         new_item_dict = until.remove_empty_properties(new_item_dict)
         new_item.signature = until.sign(new_item_dict, self._rss3_account.private_key)
 
-        logger.info("new_item:%s" % new_item_dict)
-
         id_suffix = 0
         if len(irss3_index.items) != 0 :
             old_top_id_suffix_str = irss3_index.items[0].id.split('-',2)
@@ -75,8 +73,6 @@ class RSS3Handle :
 
         new_item_id = self._rss3_account.address + '-item-' + str(id_suffix)
         new_item.id = new_item_id
-
-        logger.info("new_item.id:%s" % new_item.id)
 
         if len(irss3_index.items) + 1 <= config.conf["itemPageSize"] :
             irss3_index.items.insert(0, new_item)

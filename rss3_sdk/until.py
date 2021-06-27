@@ -5,6 +5,7 @@ from _pysha3 import keccak_256
 from .type import rss3_type
 from datetime import datetime
 from eth_keys import keys, datatypes
+from eth_keys.utils.address import public_key_bytes_to_address
 from . import converter
 
 def get_datetime_isostring() :
@@ -68,7 +69,8 @@ def check(irss3_data, personal_address) :
 
     irss3_json_msg = json.dumps(remove_not_sign_properties(irss3_data))
     curr_eth_sign = datatypes.Signature(hexbytes.HexBytes(irss3_data['signature']))
-    curr_address = curr_eth_sign.recover_public_key_from_msg(irss3_json_msg) # 这里需要转换一下
+    public_key = curr_eth_sign.recover_public_key_from_msg(irss3_json_msg) # 这里需要转换一下
+    curr_address = public_key_bytes_to_address(hexbytes.HexBytes(public_key))
     return curr_address == personal_address
 
 def get_rss3_obj(file_id) :

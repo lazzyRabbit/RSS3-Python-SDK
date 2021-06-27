@@ -9,5 +9,46 @@
 
 ## API
 
-### 初始化
+### Account
 
+```
+from rss3_sdk import rss3_accountss
+```
+
+#### 生成一个新的账户
+
+```
+    curr_account = rss3_account.RSS3Account()
+```
+
+#### 用原来的私钥进行初始化
+
+```
+    curr_account = rss3_account.RSS3Account('0xa55afab0f35bdc00c1ac137a98d5d037609eeaead8ba930c4c3878e38630e38a')
+```
+
+### RSS3Handle
+
+#### 初始化
+
+```
+    
+```
+
+#### 获取item
+
+```python
+
+```
+
+#### 修改item
+
+```python
+
+```
+
+#### 用户信息修改
+
+```python
+
+```
