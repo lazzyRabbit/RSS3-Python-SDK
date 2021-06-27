@@ -19,3 +19,4 @@ class RSS3Account :
             self.address = new_account_key.address
             self.private_key = hexbytes.HexBytes(new_account_key.key).hex()
             self.new_account_tag = True
+ss
