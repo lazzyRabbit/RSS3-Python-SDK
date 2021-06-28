@@ -18,7 +18,7 @@ This is a python sdk that is not fully accessible yet
 ### Account
 
 ```python
-    from rss3_sdk import rss3_accountss
+    from rss3_sdk import rss3_account
 ```
 
 #### Generate a new account
