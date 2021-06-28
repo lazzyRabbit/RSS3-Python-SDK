@@ -9,11 +9,6 @@ from .type import rss3_type
 from .type import inn_type
 from eth_utils import crypto
 
-# test
-import logging
-logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(levelname)s - %(lineno)s - %(message)s')
-logger = logging.getLogger(__name__)
-
 class RSS3Handle :
     def __init__(self, endpoint, rss3_account, fill_update_callback = None) :
         self._endpoint = endpoint
@@ -36,6 +31,13 @@ class RSS3Handle :
                                                date_updated = now_date)
             self._file_stroge_dict[self._rss3_account.address] = irss3_index
             self._file_update_tag.add(self._rss3_account.address)
+
+    def profile_get(self):
+        file = self._file_stroge_dict[self._rss3_account.address]
+
+        inn_profile = inn_type.IInnProfile()
+        inn_profile.__dict__.update(file.__dict__)
+        return inn_profile
 
     def profile_patch(self, inn_profile) :
         if type(inn_profile) != rss3_type.IRSS3Profile:
@@ -81,7 +83,7 @@ class RSS3Handle :
             new_items.append(new_item)
             old_iterms_id_suffix = 0
 
-            if  irss3_index.items != None :
+            if irss3_index.items != None :
                 try:
                     old_iterms_id_suffix = int(irss3_index.items[0].id.split('-',2))
                 except Exception as e:
@@ -105,13 +107,13 @@ class RSS3Handle :
 
         return new_item
 
-    def item_get(self, item_id, items_id) :
-        if item_id == None or items_id == None:
+    def item_get(self, item_id) :
+        if item_id == None :
             raise ValueError("File_id is invalid parameter")
 
-        irss3 = self._file_stroge_dict[items_id]
-        if irss3 == None or type(irss3) != rss3_type.IRSS3Index or type(irss3) != rss3_type.IRSS3Items:
-            return TypeError("Items_id %s find irss3 index is error" % items_id)
+        irss3 = self._file_stroge_dict[self._rss3_account.address]
+        if irss3 == None and type(irss3) != rss3_type.IRSS3Index and type(irss3) != rss3_type.IRSS3Items:
+            return TypeError("Items_id %s find irss3 index is error" % self._rss3_account.address)
 
         try:
             index = irss3.items.index(item_id)
@@ -122,13 +124,13 @@ class RSS3Handle :
         inn_item = converter.IInnItemSchema.load(irss3_item_json)
         return inn_item
 
-    def item_patch(self, inn_item, items_id) :
-        if inn_item == None or items_id == None :
+    def item_patch(self, inn_item) :
+        if inn_item == None :
             raise ValueError("Inn_item and items_id is invalid parameter")
 
-        irss3 = self._file_stroge_dict[items_id]
-        if irss3 == None or type(irss3) != rss3_type.IRSS3Index or type(irss3) != rss3_type.IRSS3Items :
-            return TypeError("Items_id %s find irss3 index is error" % items_id)
+        irss3 = self._file_stroge_dict[self._rss3_account.address]
+        if irss3 == None and type(irss3) != rss3_type.IRSS3Index and type(irss3) != rss3_type.IRSS3Items :
+            return TypeError("Items_id %s find irss3 index is error" % self._rss3_account.address)
 
         try:
             index = irss3.items.index(inn_item.id)
@@ -137,7 +139,7 @@ class RSS3Handle :
 
         irss3.items[index].__dict__.update(inn_item.__dict__)
         irss3.items[index].date_modified = until.get_datetime_isostring()
-        self._file_update_tag.add(items_id)
+        self._file_update_tag.add(self._rss3_account.address)
 
         return irss3.items[index]
 
@@ -155,10 +157,6 @@ class RSS3Handle :
                     raise ValueError("Can't find file_id : %s" % file_id)
 
                 # Verify the pulled file
-                # irss3_content = until.get_rss3_obj(file_id)
-                # irss3_content_dict = until.get_rss3_json_dict(irss3_content, 2)
-                # logger.info(irss3_content.__dict__)
-                logger.info(resp_dict)
                 check = until.check(resp_dict,
                                     file_id.split('-', 0))
                 if check == False :
@@ -168,7 +166,6 @@ class RSS3Handle :
                 irss3_index_schema = converter.IRSS3IndexSchema()
                 irss3_index = irss3_index_schema.load(resp_dict)
                 self._file_stroge_dict[self._rss3_account.addresss] = irss3_index
-                logger.info("dict : %r" % irss3_index.__dict__)
 
                 return True
             elif response.status == 400 :
@@ -194,7 +191,6 @@ class RSS3Handle :
                 try :
                     file_dict = until.get_rss3_json_dict(file, 2)
                 except TypeError as e :
-                    logger.info(e)
                     continue
                 file_dict = until.remove_empty_properties(file_dict)
                 file.signature = until.sign(file_dict, self._rss3_account.private_key)
