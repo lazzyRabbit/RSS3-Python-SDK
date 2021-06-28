@@ -1,7 +1,7 @@
 # RSS3 Python SDK
 
-python3 version：v3.9.X
-This is a python sdk that is not fully accessible yet
+python3 version：v3.9.X  
+This is a python sdk that is not fully accessible yet  
 
 ## Current issues to be resolved
 
