@@ -36,7 +36,7 @@ This is a python sdk that is not fully accessible yet
 ### RSS3Handle
 
 ```python
-    from rss3_sdk import rss3_account
+    from rss3_sdk import rss3_handle
 ```
 
 #### Initialization

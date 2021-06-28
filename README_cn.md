@@ -36,7 +36,7 @@ python3 version：v3.9.X
 ### RSS3Handle
 
 ```python
-    from rss3_sdk import rss3_account
+    from rss3_sdk import rss3_handle
 ```
 
 #### 初始化
