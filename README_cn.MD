@@ -17,31 +17,31 @@ python3 version：v3.9.X
 
 ### Account
 
-```
+```python
     from rss3_sdk import rss3_accountss
 ```
 
 #### 生成一个新的账户
 
-```
+```python
     curr_account = rss3_account.RSS3Account()
 ```
 
 #### 用原来的私钥进行初始化
 
-```
+```python
     curr_account = rss3_account.RSS3Account('0xa55afab0f35bdc00c1ac137a98d5d037609eeaead8ba930c4c3878e38630e38a')
 ```
 
 ### RSS3Handle
 
-```
+```python
     from rss3_sdk import rss3_account
 ```
 
 #### 初始化
 
-```
+```python
     handle = rss3_handle.RSS3Handle(
     endpoint = 'rss3-hub-playground-6raed.ondigitalocean.app',
     rss3_account = curr_account,
@@ -50,7 +50,7 @@ python3 version：v3.9.X
 
 #### 获取并修改item
 
-```
+```python
     # The type of'inn_item' is IInnItem, you can also generate a new one yourself
     
     inn_item = handle.item_get('0x6338ee94fB85e157D117d681E808a34a9aC21f31-item-1')
@@ -60,7 +60,7 @@ python3 version：v3.9.X
 
 #### 用户信息修改
 
-```
+```python
     # The type of'inn_profile' is IInnProfile, you can also generate a new one yourself
     
     inn_profile = handle.profile_get()
