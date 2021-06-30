@@ -9,18 +9,29 @@ from .type import rss3_type
 from .type import inn_type
 from eth_utils import crypto
 
+import logging
+logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(levelname)s - %(lineno)s - %(message)s')
+logger = logging.getLogger(__name__)
+
 class RSS3Handle :
     def __init__(self, endpoint, rss3_account, fill_update_callback = None) :
         self._endpoint = endpoint
         self._rss3_account = rss3_account
         self._fill_update_callback = fill_update_callback
-        self._http = urllib3.PoolManager()
+
+        # self._http = urllib3.PoolManager()
+        if 'proxy' in config.conf :
+            logger.info(config.conf['proxy'])
+            self._http = urllib3.ProxyManager(config.conf['proxy'])
+        else :
+            self._http = urllib3.PoolManager()
 
         self._file_stroge_dict = {}
         self._file_update_tag = set()
 
         if self._rss3_account == None or self._endpoint == None :
            raise ValueError("Rss3_account or endpoint is invalid parameter")
+
 
         if self._rss3_account.new_account_tag == False :
             self.get_file(self._rss3_account.address)
@@ -40,7 +51,7 @@ class RSS3Handle :
         return inn_profile
 
     def profile_patch(self, inn_profile) :
-        if type(inn_profile) != rss3_type.IRSS3Profile:
+        if isinstance(inn_profile, rss3_type.IRSS3Profile) == False:
            raise ValueError("Inn_profile is invalid parameter")
 
         file = self._file_stroge_dict[self._rss3_account.address]
@@ -49,7 +60,7 @@ class RSS3Handle :
         self._file_update_tag.add(self._rss3_account.address)
 
     def item_post(self, inn_item) :
-        if type(inn_item) != inn_type.IInnItem :
+        if isinstance(inn_item, inn_type.IInnItem) == False :
             raise ValueError("Inn_item is invalid parameter")
 
         now_date = until.get_datetime_isostring()
@@ -112,7 +123,7 @@ class RSS3Handle :
             raise ValueError("File_id is invalid parameter")
 
         irss3 = self._file_stroge_dict[self._rss3_account.address]
-        if irss3 == None and type(irss3) != rss3_type.IRSS3Index and type(irss3) != rss3_type.IRSS3Items:
+        if irss3 == None and isinstance(irss3, rss3_type.IRSS3Index) and type(irss3) != rss3_type.IRSS3Items:
             return TypeError("Items_id %s find irss3 index is error" % self._rss3_account.address)
 
         try:
@@ -129,7 +140,7 @@ class RSS3Handle :
             raise ValueError("Inn_item and items_id is invalid parameter")
 
         irss3 = self._file_stroge_dict[self._rss3_account.address]
-        if irss3 == None and type(irss3) != rss3_type.IRSS3Index and type(irss3) != rss3_type.IRSS3Items :
+        if irss3 == None and isinstance(irss3, rss3_type.IRSS3Index) == False and isinstance(irss3, rss3_type.IRSS3Items) :
             return TypeError("Items_id %s find irss3 index is error" % self._rss3_account.address)
 
         try:
@@ -147,7 +158,8 @@ class RSS3Handle :
         if file_id == None:
             raise ValueError("File_id is invalid parameter")
 
-        file_get_url = self._endpoint + file_id
+        file_get_url = "https://" + self._endpoint + '/' + file_id
+        logger.info(file_get_url)
         try:
             response = self._http.request(method = 'GET', url = file_get_url)
             if response.status == 200 :
@@ -158,7 +170,7 @@ class RSS3Handle :
 
                 # Verify the pulled file
                 check = until.check(resp_dict,
-                                    file_id.split('-', 0))
+                                    file_id.split('-')[0])
                 if check == False :
                     raise ValueError("The file_id %s signature does not match " % file_id)
 

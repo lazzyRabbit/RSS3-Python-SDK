@@ -1,12 +1,14 @@
 import json
 import copy
-import hexbytes
-from _pysha3 import keccak_256
 from .type import rss3_type
 from datetime import datetime
-from eth_keys import keys, datatypes
-from eth_keys.utils.address import public_key_bytes_to_address
 from . import converter
+from web3.auto import w3
+from eth_account.messages import encode_defunct
+
+import logging
+logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(levelname)s - %(lineno)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 def get_datetime_isostring() :
     dt = datetime.now()
@@ -17,15 +19,31 @@ def get_datetime_isostring() :
     isostring = datetime.strftime(utc, '%Y-%m-%dT%H:%M:%S.{0}Z')
     return isostring.format(int(round(utc.microsecond/1000.0)))
 
-def remove_not_sign_properties(data) :
-    new_data = copy.deepcopy(data)
-    for key in data :
-        if ('a_' in key) or key == 'signature' :
-            del new_data[key]
-    return new_data
+def value_is_not_sign(key) :
+    return (key.find('@') == -1) and key != 'signature'
 
-def value_is_not_empty(value):
+def value_is_not_empty(value) :
     return value not in ['', None, {}, []]
+
+def remove_not_sign_properties(data) :
+    if isinstance(data, dict) :
+        temp_data = dict()
+        for key, value in data.items():
+            if value_is_not_sign(key) :
+                new_value = remove_not_sign_properties(value)
+                if value_is_not_sign(key) and value_is_not_empty(new_value):
+                    temp_data[key] = new_value
+        return None if not temp_data else temp_data
+
+    elif isinstance(data, list):
+        temp_data = list()
+        for value in data:
+            new_value = remove_not_sign_properties(value)
+            temp_data.append(new_value)
+        return None if not temp_data else temp_data
+
+    elif value_is_not_empty(data):
+        return data
 
 def remove_empty_properties(data) :
     if isinstance(data, dict):
@@ -37,41 +55,42 @@ def remove_empty_properties(data) :
                     temp_data[key] = new_value
         return None if not temp_data else temp_data
 
-    elif isinstance(data, list):
-        temp_data = list()
-        for value in data:
-            if value_is_not_empty(value):
-                new_value = remove_empty_properties(value)
-                if value_is_not_empty(new_value):
-                    temp_data.append(new_value)
-        return None if not temp_data else temp_data
+    # elif isinstance(data, list):
+    #     temp_data = list()
+    #     for value in data:
+    #         if value_is_not_empty(value):
+    #             new_value = remove_empty_properties(value)
+    #             if value_is_not_empty(new_value):
+    #                 temp_data.append(new_value)
+    #     return None if not temp_data else temp_data
 
     elif value_is_not_empty(data):
         return data
 
-# Since I don’t know the specific type of irss3,
-# it needs to be converted into a dict outside the function
-# sign(irss3_dict, private_key) and check(irss3_dict, personal)
-# Of course, sign_msg has an automatic hash converted to keccak256 inside
-
 def sign(irss3_data, private_key) :
     if irss3_data == None or private_key == None :
         return None
-    irss3_json_msg = json.dumps(remove_not_sign_properties(irss3_data))
-    eth_private_key = keys.PrivateKey(hexbytes.HexBytes(private_key))
-    bytes_irss3_json_msg = bytes(irss3_json_msg, 'utf-8')
+    not_sign_irss3_data = copy.deepcopy(irss3_data)
+    irss3_json_msg = json.dumps(remove_not_sign_properties(not_sign_irss3_data))
 
-    return eth_private_key.sign_msg(bytes_irss3_json_msg).to_hex()
+    return w3.eth.account.sign_message(irss3_json_msg, private_key).signature
 
 def check(irss3_data, personal_address) :
-    if irss3_data == None or type(irss3_data) != dict or irss3_data['signature'] == None or personal_address == None :
+    if irss3_data == None or isinstance(irss3_data, dict) == False or irss3_data['signature'] == None or personal_address == None :
         return False
 
-    irss3_json_msg = json.dumps(remove_not_sign_properties(irss3_data))
-    curr_eth_sign = datatypes.Signature(hexbytes.HexBytes(irss3_data['signature']))
-    public_key = curr_eth_sign.recover_public_key_from_msg(irss3_json_msg) # 这里需要转换一下
-    curr_address = public_key_bytes_to_address(hexbytes.HexBytes(public_key))
-    return curr_address == personal_address
+    not_sign_irss3_data = copy.deepcopy(irss3_data)
+    logger.info(not_sign_irss3_data)
+    irss3_json_msg = json.dumps(remove_not_sign_properties(not_sign_irss3_data), separators=(',',':'))
+    # logger.info(irss3_json_msg)
+    message = encode_defunct(text = irss3_json_msg)
+    # logger.info(message)
+    # logger.info(irss3_data['signature'])
+    # ddd = w3.eth.account.recover_message(message, signature = irss3_data['signature'])
+    # logger.info(ddd)
+    # logger.info(type(personal_address), personal_address)
+    return w3.eth.account.recover_message(message, signature=irss3_data['signature']) == personal_address
+
 
 def get_rss3_obj(file_id) :
     if file_id == None :
@@ -91,13 +110,13 @@ def get_rss3_json_dict(rss3_obj, return_type = 1):
         raise TypeError("Rss3_obj and return_type is is invalid parameter")
 
     return_result = None
-    if type(rss3_obj) == rss3_type.IRSS3Items:
+    if isinstance(rss3_obj, rss3_type.IRSS3Items):
         irss3_items_schema = converter.IRSS3ItemsSchema()
         return_result = irss3_items_schema.dumps(rss3_obj) if return_type == 1 else irss3_items_schema.dump(rss3_obj)
-    elif type(rss3_obj) == rss3_type.IRSS3List:
+    elif isinstance(rss3_obj, rss3_type.IRSS3List):
         irss3_list_schema = converter.IRSS3ListSchema()
         return_result = irss3_list_schema.dumps(rss3_obj) if return_type == 1 else irss3_list_schema.dump(rss3_obj)
-    elif type(rss3_obj) == rss3_type.IRSS3Index:
+    elif isinstance(rss3_obj, rss3_type.IRSS3Index):
         irss3_index_schema = converter.IRSS3IndexSchema()
         return_result = irss3_index_schema.dumps(rss3_obj) if return_type == 1 else irss3_index_schema.dump(rss3_obj)
     else :
