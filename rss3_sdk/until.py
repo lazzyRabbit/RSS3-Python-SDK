@@ -26,24 +26,31 @@ def value_is_not_empty(value) :
     return value not in ['', None, {}, []]
 
 def remove_not_sign_properties(data) :
-    if isinstance(data, dict) :
-        temp_data = dict()
-        for key, value in data.items():
-            if value_is_not_sign(key) :
-                new_value = remove_not_sign_properties(value)
-                if value_is_not_sign(key) and value_is_not_empty(new_value):
-                    temp_data[key] = new_value
-        return None if not temp_data else temp_data
+    temp_data = dict()
+    for key, value in data.items():
+        if (key.find('@') == -1) and key != 'signature' :
+            temp_data[key] = value
+    return temp_data
 
-    elif isinstance(data, list):
-        temp_data = list()
-        for value in data:
-            new_value = remove_not_sign_properties(value)
-            temp_data.append(new_value)
-        return None if not temp_data else temp_data
+# def remove_not_sign_properties(data) :
+#     if isinstance(data, dict) :
+#         temp_data = dict()
+#         for key, value in data.items():
+#             if value_is_not_sign(key) :
+#                 new_value = remove_not_sign_properties(value)
+#                 if value_is_not_sign(key) :
+#                     temp_data[key] = new_value
+#         return None if not temp_data else temp_data
 
-    elif value_is_not_empty(data):
-        return data
+    # elif isinstance(data, list):
+    #     temp_data = list()
+    #     for value in data :
+    #         new_value = remove_not_sign_properties(value)
+    #         temp_data.append(new_value)
+    #     return None if not temp_data else temp_data
+
+    # elif value_is_not_empty(data):
+    #     return data
 
 def remove_empty_properties(data) :
     if isinstance(data, dict):
@@ -51,20 +58,41 @@ def remove_empty_properties(data) :
         for key, value in data.items():
             if value_is_not_empty(value):
                 new_value = remove_empty_properties(value)
-                if value_is_not_empty(new_value):
+                if value_is_not_empty(new_value) :
                     temp_data[key] = new_value
         return None if not temp_data else temp_data
 
-    # elif isinstance(data, list):
-    #     temp_data = list()
-    #     for value in data:
-    #         if value_is_not_empty(value):
-    #             new_value = remove_empty_properties(value)
-    #             if value_is_not_empty(new_value):
-    #                 temp_data.append(new_value)
-    #     return None if not temp_data else temp_data
+    elif isinstance(data, list):
+        temp_data = list()
+        for value in data:
+            if value_is_not_empty(value):
+                new_value = remove_empty_properties(value)
+                if value_is_not_empty(new_value) :
+                    temp_data.append(new_value)
+        return None if not temp_data else temp_data
 
     elif value_is_not_empty(data):
+        return data
+
+def sorted_irss_dict(data) :
+    if isinstance(data, dict) :
+        temp_data = dict()
+        for key, value in data.items() :
+            new_value = sorted_irss_dict(value)
+            temp_data[key] = new_value
+        return sorted(temp_data.items(), key=lambda d: d[0])
+
+    elif isinstance(data, list) :
+        temp_data = list()
+        count = 0
+        for value in data:
+            new_value = sorted_irss_dict(value)
+            temp_data.append([str(count), new_value])
+            count = count + 1
+        logger.info("temp_data : %s" % temp_data)
+        return None if not temp_data else temp_data
+
+    elif value_is_not_empty(data) :
         return data
 
 def sign(irss3_data, private_key) :
@@ -81,13 +109,17 @@ def check(irss3_data, personal_address) :
 
     not_sign_irss3_data = copy.deepcopy(irss3_data)
     logger.info(not_sign_irss3_data)
-    irss3_json_msg = json.dumps(remove_not_sign_properties(not_sign_irss3_data), separators=(',',':'))
-    # logger.info(irss3_json_msg)
+    not_sign_irss3_data = remove_not_sign_properties(not_sign_irss3_data)
+    logger.info(not_sign_irss3_data)
+    not_sign_irss3_data = sorted_irss_dict(not_sign_irss3_data)
+    logger.info(not_sign_irss3_data)
+    irss3_json_msg = json.dumps(not_sign_irss3_data, separators=(',',':'))
+    logger.info(irss3_json_msg)
     message = encode_defunct(text = irss3_json_msg)
-    # logger.info(message)
+    logger.info(irss3_data['signature'])
     # logger.info(irss3_data['signature'])
-    # ddd = w3.eth.account.recover_message(message, signature = irss3_data['signature'])
-    # logger.info(ddd)
+    ddd = w3.eth.account.recover_message(message, signature = irss3_data['signature'])
+    logger.info(ddd)
     # logger.info(type(personal_address), personal_address)
     return w3.eth.account.recover_message(message, signature=irss3_data['signature']) == personal_address
 
