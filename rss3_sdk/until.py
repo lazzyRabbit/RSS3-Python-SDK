@@ -68,7 +68,7 @@ def sorted_irss_dict(data) :
             new_value = sorted_irss_dict(value)
             temp_data.append([str(count), new_value])
             count = count + 1
-        logger.info("temp_data : %s" % temp_data)
+
         return None if not temp_data else temp_data
 
     elif value_is_not_empty(data) :
@@ -79,7 +79,7 @@ def irss3_data_dump_handle(irss3_data) :
     not_sign_irss3_data = remove_not_sign_properties(not_sign_irss3_data)
     not_sign_irss3_data = sorted_irss_dict(not_sign_irss3_data)
 
-    return json.dumps(not_sign_irss3_data, separators=(',',':'))
+    return json.dumps(not_sign_irss3_data, separators=(',',':'), ensure_ascii = False)
 
 #########################################
 
@@ -87,6 +87,8 @@ def sign(irss3_data, private_key) :
     if irss3_data == None or private_key == None :
         return None
     not_sign_irss3_data = copy.deepcopy(irss3_data)
+
+    irss3_data = remove_empty_properties(irss3_data)
     logger.info(not_sign_irss3_data)
     irss3_json_msg = irss3_data_dump_handle(irss3_data_dump_handle(irss3_data))
 
@@ -96,9 +98,6 @@ def check(irss3_data, personal_address) :
     if irss3_data == None or isinstance(irss3_data, dict) == False or irss3_data['signature'] == None or personal_address == None :
         return False
 
-    # not_sign_irss3_data = copy.deepcopy(irss3_data)
-    # not_sign_irss3_data = remove_not_sign_properties(not_sign_irss3_data)
-    # not_sign_irss3_data = sorted_irss_dict(not_sign_irss3_data)
     irss3_json_msg = irss3_data_dump_handle(irss3_data)
     logger.info(irss3_json_msg)
     message = encode_defunct(text = irss3_json_msg)
