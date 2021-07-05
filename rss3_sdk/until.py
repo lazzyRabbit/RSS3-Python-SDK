@@ -19,8 +19,7 @@ def get_datetime_isostring() :
     isostring = datetime.strftime(utc, '%Y-%m-%dT%H:%M:%S.{0}Z')
     return isostring.format(int(round(utc.microsecond/1000.0)))
 
-def value_is_not_sign(key) :
-    return (key.find('@') == -1) and key != 'signature'
+#########################################
 
 def value_is_not_empty(value) :
     return value not in ['', None, {}, []]
@@ -31,26 +30,6 @@ def remove_not_sign_properties(data) :
         if (key.find('@') == -1) and key != 'signature' :
             temp_data[key] = value
     return temp_data
-
-# def remove_not_sign_properties(data) :
-#     if isinstance(data, dict) :
-#         temp_data = dict()
-#         for key, value in data.items():
-#             if value_is_not_sign(key) :
-#                 new_value = remove_not_sign_properties(value)
-#                 if value_is_not_sign(key) :
-#                     temp_data[key] = new_value
-#         return None if not temp_data else temp_data
-
-    # elif isinstance(data, list):
-    #     temp_data = list()
-    #     for value in data :
-    #         new_value = remove_not_sign_properties(value)
-    #         temp_data.append(new_value)
-    #     return None if not temp_data else temp_data
-
-    # elif value_is_not_empty(data):
-    #     return data
 
 def remove_empty_properties(data) :
     if isinstance(data, dict):
@@ -95,11 +74,21 @@ def sorted_irss_dict(data) :
     elif value_is_not_empty(data) :
         return data
 
+def irss3_data_dump_handle(irss3_data) :
+    not_sign_irss3_data = copy.deepcopy(irss3_data)
+    not_sign_irss3_data = remove_not_sign_properties(not_sign_irss3_data)
+    not_sign_irss3_data = sorted_irss_dict(not_sign_irss3_data)
+
+    return json.dumps(not_sign_irss3_data, separators=(',',':'))
+
+#########################################
+
 def sign(irss3_data, private_key) :
     if irss3_data == None or private_key == None :
         return None
     not_sign_irss3_data = copy.deepcopy(irss3_data)
-    irss3_json_msg = json.dumps(remove_not_sign_properties(not_sign_irss3_data))
+    logger.info(not_sign_irss3_data)
+    irss3_json_msg = irss3_data_dump_handle(irss3_data_dump_handle(irss3_data))
 
     return w3.eth.account.sign_message(irss3_json_msg, private_key).signature
 
@@ -107,13 +96,10 @@ def check(irss3_data, personal_address) :
     if irss3_data == None or isinstance(irss3_data, dict) == False or irss3_data['signature'] == None or personal_address == None :
         return False
 
-    not_sign_irss3_data = copy.deepcopy(irss3_data)
-    logger.info(not_sign_irss3_data)
-    not_sign_irss3_data = remove_not_sign_properties(not_sign_irss3_data)
-    logger.info(not_sign_irss3_data)
-    not_sign_irss3_data = sorted_irss_dict(not_sign_irss3_data)
-    logger.info(not_sign_irss3_data)
-    irss3_json_msg = json.dumps(not_sign_irss3_data, separators=(',',':'))
+    # not_sign_irss3_data = copy.deepcopy(irss3_data)
+    # not_sign_irss3_data = remove_not_sign_properties(not_sign_irss3_data)
+    # not_sign_irss3_data = sorted_irss_dict(not_sign_irss3_data)
+    irss3_json_msg = irss3_data_dump_handle(irss3_data)
     logger.info(irss3_json_msg)
     message = encode_defunct(text = irss3_json_msg)
     logger.info(irss3_data['signature'])
