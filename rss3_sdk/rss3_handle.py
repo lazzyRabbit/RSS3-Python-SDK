@@ -19,7 +19,6 @@ class RSS3Handle :
         self._rss3_account = rss3_account
         self._fill_update_callback = fill_update_callback
 
-        # self._http = urllib3.PoolManager()
         if 'proxy' in config.conf :
             logger.info(config.conf['proxy'])
             self._http = urllib3.ProxyManager(config.conf['proxy'])
@@ -45,19 +44,38 @@ class RSS3Handle :
 
     def profile_get(self):
         file = self._file_stroge_dict[self._rss3_account.address]
+        if file == None:
+            raise ValueError("can not find %s in stroge" % self._rss3_account.address)
 
-        inn_profile = inn_type.IInnProfile()
-        inn_profile.__dict__.update(file.__dict__)
+        curr_profile = file.profile
+        if curr_profile == None :
+            return inn_type.IInnProfile()
+        else :
+            profile_dict = converter.IRSS3ProfileSchema().dump(curr_profile)
+            inn_profile = converter.IInnProfileSchema.load(profile_dict)
+
         return inn_profile
 
     def profile_patch(self, inn_profile) :
-        if isinstance(inn_profile, rss3_type.IRSS3Profile) == False:
-           raise ValueError("Inn_profile is invalid parameter")
+        if isinstance(inn_profile, inn_type.IInnProfile) == False and isinstance(inn_profile, None) == False :
+            raise ValueError("Inn_profile is invalid parameter")
 
         file = self._file_stroge_dict[self._rss3_account.address]
-        file.profile.__dict__.update(inn_profile.__dict__)
-        file.profile.signature = until.sign(file.profile.__dict__, self._rss3_account.private_key)
-        self._file_update_tag.add(self._rss3_account.address)
+        if file == None :
+            raise ValueError("can not find %s in stroge" % self._rss3_account.address)
+
+        if file.profile == None :
+            file.profile = rss3_type.IRSS3Profile()
+
+        inn_profile_dict = converter.IInnProfileSchema().dump(inn_profile)
+        logger.info(inn_profile_dict)
+        inn_profile_dict = until.remove_empty_properties(inn_profile_dict)
+        signature = until.sign(inn_profile_dict, self._rss3_account.private_key)
+        inn_profile_dict['signature'] = signature
+        logger.info("file.profile.signature:%s" % signature)
+        logger.info(inn_profile_dict)
+        file.profile = converter.IRSS3ProfileSchema().load(inn_profile_dict)
+        file = self._update(file)
 
     def item_post(self, inn_item) :
         if isinstance(inn_item, inn_type.IInnItem) == False :
@@ -177,7 +195,7 @@ class RSS3Handle :
                 # Store files locally
                 irss3_index_schema = converter.IRSS3IndexSchema()
                 irss3_index = irss3_index_schema.load(resp_dict)
-                self._file_stroge_dict[self._rss3_account.addresss] = irss3_index
+                self._file_stroge_dict[self._rss3_account.address] = irss3_index
 
                 return True
             elif response.status == 400 :
@@ -194,7 +212,7 @@ class RSS3Handle :
             raise exceptions.HttpError("Connect Error : %s" % e)
 
     def update_file(self) :
-        file_get_url = self._endpoint
+        file_get_url = "https://" + self._endpoint
         contents = []
 
         for file_name in self._file_update_tag :
@@ -210,9 +228,11 @@ class RSS3Handle :
                 contents.append(file_dict)
 
         contents_dict = {
-            "contents":contents
+            "contents" : contents
         }
-        content_json_str = json.dumps(contents_dict)
+        logger.info(contents_dict)
+        content_json_str = json.dumps(contents_dict, ensure_ascii = False).encode("utf-8")
+        logger.info(content_json_str)
 
         try:
             response = self._http.request(method = 'PUT',
@@ -224,10 +244,20 @@ class RSS3Handle :
             elif response.data != None :
                 resp_dict = json.loads(response.data.decode())
                 if resp_dict != None :
-                    raise exceptions.HttpError("Rss3 error code %d, Rss3 error result %s" % resp_dict['code'], resp_dict['message'])
+                    raise exceptions.HttpError("Rss3 error code %r, Rss3 error result %r" % (resp_dict['code'], resp_dict['message']))
                 else :
                     raise exceptions.HttpError("Execute wrong network code: %d" % response.status)
             else :
                 raise exceptions.HttpError("Execute wrong network code: %d" % response.status)
         except urllib3.exceptions.HTTPError as e:
             raise exceptions.HttpError("Connect Error : %s" % e)
+
+    def _update(self, irss3_base) :
+        if isinstance(irss3_base, rss3_type.IRSS3Base) == False :
+            raise ValueError("irss3_base is invalid parameter")
+
+        logger.info("irss3_base.date_updated: %s " % irss3_base.date_updated)
+        irss3_base.date_updated = until.get_datetime_isostring()
+        logger.info("irss3_base.date_updated: %s " % irss3_base.date_updated)
+        self._file_stroge_dict[self._rss3_account.address]
+        self._file_update_tag.add(self._rss3_account.address)

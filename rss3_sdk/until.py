@@ -25,6 +25,9 @@ def value_is_not_empty(value) :
     return value not in ['', None, {}, []]
 
 def remove_not_sign_properties(data) :
+    if data == None :
+        return None
+
     temp_data = dict()
     for key, value in data.items():
         if (key.find('@') == -1) and key != 'signature' :
@@ -86,13 +89,11 @@ def irss3_data_dump_handle(irss3_data) :
 def sign(irss3_data, private_key) :
     if irss3_data == None or private_key == None :
         return None
-    not_sign_irss3_data = copy.deepcopy(irss3_data)
 
-    irss3_data = remove_empty_properties(irss3_data)
-    logger.info(not_sign_irss3_data)
-    irss3_json_msg = irss3_data_dump_handle(irss3_data_dump_handle(irss3_data))
+    irss3_json_msg = irss3_data_dump_handle(irss3_data)
+    message = encode_defunct(text = irss3_json_msg)
 
-    return w3.eth.account.sign_message(irss3_json_msg, private_key).signature
+    return w3.eth.account.sign_message(message, private_key).signature.hex()
 
 def check(irss3_data, personal_address) :
     if irss3_data == None or isinstance(irss3_data, dict) == False or irss3_data['signature'] == None or personal_address == None :
@@ -102,7 +103,6 @@ def check(irss3_data, personal_address) :
     logger.info(irss3_json_msg)
     message = encode_defunct(text = irss3_json_msg)
     logger.info(irss3_data['signature'])
-    # logger.info(irss3_data['signature'])
     ddd = w3.eth.account.recover_message(message, signature = irss3_data['signature'])
     logger.info(ddd)
     # logger.info(type(personal_address), personal_address)
