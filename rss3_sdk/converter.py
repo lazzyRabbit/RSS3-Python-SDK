@@ -1,6 +1,6 @@
 from rss3_sdk.type import rss3_type
 from rss3_sdk.type import inn_type
-from marshmallow import Schema, fields, post_load
+from marshmallow import Schema, fields, post_load, EXCLUDE
 
 # rss3 json converter
 #########################################
@@ -133,6 +133,9 @@ class IRSS3ListSchema(Schema) :
 # inn json converter
 #########################################
 class IInnProfileSchema(Schema) :
+    class Meta:
+        unknown = EXCLUDE
+
     name = fields.String(data_key='name', required = False)
     avatar = fields.List(fields.String, data_key='avatar', required = False)
     bio = fields.String(data_key='bio', required = False)
@@ -140,7 +143,7 @@ class IInnProfileSchema(Schema) :
 
     @post_load
     def make_profile(self, data, **kwargs):
-        return rss3_type.IRSS3Profile(**data)
+        return inn_type.IInnProfile(**data)
 
 class IInnItemSchema(Schema) :
     id = fields.String(data_key = 'id', required = True)

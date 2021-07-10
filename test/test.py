@@ -39,8 +39,6 @@ if __name__ == '__main__':
     handle.update_file()
     # '''
 
-    print(until.get_datetime_isostring())
-
     # proxy = urllib3.ProxyManager("http://127.0.0.1:4780/")
     # resp1 = proxy.request("GET", "https://www.google.com/")
 

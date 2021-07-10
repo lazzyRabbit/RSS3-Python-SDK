@@ -52,12 +52,14 @@ class RSS3Handle :
             return inn_type.IInnProfile()
         else :
             profile_dict = converter.IRSS3ProfileSchema().dump(curr_profile)
-            inn_profile = converter.IInnProfileSchema.load(profile_dict)
+            profile_dict = until.remove_empty_properties(profile_dict)
+            inn_profile = converter.IInnProfileSchema().load(profile_dict)
 
         return inn_profile
 
     def profile_patch(self, inn_profile) :
-        if isinstance(inn_profile, inn_type.IInnProfile) == False and isinstance(inn_profile, None) == False :
+        if isinstance(inn_profile, inn_type.IInnProfile) == False and inn_profile != None :
+            logger.info(type(inn_profile))
             raise ValueError("Inn_profile is invalid parameter")
 
         file = self._file_stroge_dict[self._rss3_account.address]
@@ -220,6 +222,7 @@ class RSS3Handle :
             if file != None :
                 try :
                     file_dict = until.get_rss3_json_dict(file, 2)
+                    logger.info(file_dict)
                 except TypeError as e :
                     continue
                 file_dict = until.remove_empty_properties(file_dict)
