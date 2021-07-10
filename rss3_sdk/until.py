@@ -1,5 +1,6 @@
 import json
 import copy
+import tzlocal
 from .type import rss3_type
 from datetime import datetime
 from . import converter
@@ -11,11 +12,11 @@ logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(le
 logger = logging.getLogger(__name__)
 
 def get_datetime_isostring() :
-    dt = datetime.now()
+    dt = datetime.now(tzlocal.get_localzone())
     try:
-        utc = dt + dt.utcoffset()
+        utc = dt - dt.utcoffset()
     except TypeError as e:
-        utc = dt
+        raise ("Get current UTC Time False, current time %r " % dt)
     isostring = datetime.strftime(utc, '%Y-%m-%dT%H:%M:%S.{0}Z')
     return isostring.format(int(round(utc.microsecond/1000.0)))
 
@@ -91,6 +92,7 @@ def sign(irss3_data, private_key) :
         return None
 
     irss3_json_msg = irss3_data_dump_handle(irss3_data)
+    logger.info(irss3_json_msg)
     message = encode_defunct(text = irss3_json_msg)
 
     return w3.eth.account.sign_message(message, private_key).signature.hex()
