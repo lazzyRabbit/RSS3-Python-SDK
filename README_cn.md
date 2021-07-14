@@ -1,7 +1,7 @@
 # RSS3 Python SDK
 
 python3 version：v3.9.X  
-这是一个还未完全跑通的rss3 python sdk
+版本0.1.0 beta版
 
 ## 当前暂未解决问题
   
