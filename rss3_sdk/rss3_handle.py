@@ -1,4 +1,5 @@
 import sys
+import math
 import json
 import urllib3
 from . import until
@@ -7,7 +8,6 @@ from . import converter
 from . import exceptions
 from .type import rss3_type
 from .type import inn_type
-from eth_utils import crypto
 
 import logging
 logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(levelname)s - %(lineno)s - %(message)s')
@@ -42,6 +42,7 @@ class RSS3Handle :
             self._file_stroge_dict[self._rss3_account.address] = irss3_index
             self._file_update_tag.add(self._rss3_account.address)
 
+#profile used
     def profile_get(self):
         file = self._file_stroge_dict[self._rss3_account.address]
         if file == None:
@@ -59,25 +60,66 @@ class RSS3Handle :
 
     def profile_patch(self, inn_profile) :
         if isinstance(inn_profile, inn_type.IInnProfile) == False and inn_profile != None :
-            logger.info(type(inn_profile))
             raise ValueError("Inn_profile is invalid parameter")
 
-        file = self._file_stroge_dict[self._rss3_account.address]
-        if file == None :
+        rss3 = self._file_stroge_dict[self._rss3_account.address]
+        if rss3 == None :
             raise ValueError("can not find %s in stroge" % self._rss3_account.address)
 
-        if file.profile == None :
-            file.profile = rss3_type.IRSS3Profile()
+        if rss3.profile == None :
+            rss3.profile = rss3_type.IRSS3Profile()
 
         inn_profile_dict = converter.IInnProfileSchema().dump(inn_profile)
-        logger.info(inn_profile_dict)
         inn_profile_dict = until.remove_empty_properties(inn_profile_dict)
         signature = until.sign(inn_profile_dict, self._rss3_account.private_key)
         inn_profile_dict['signature'] = signature
-        logger.info("file.profile.signature:%s" % signature)
-        logger.info(inn_profile_dict)
-        file.profile = converter.IRSS3ProfileSchema().load(inn_profile_dict)
-        file = self._update(file)
+        rss3.profile = converter.IRSS3ProfileSchema().load(inn_profile_dict)
+        self._update(rss3)
+
+# item used
+    def _get_position(self, item_id) :
+        prase_ele = until.prase_id(item_id)
+        if prase_ele['address'] != self._rss3_account.address:
+            raise ValueError("File_id is invalid parameter, address %s is error." % prase_ele['address'])
+
+        irss3 = self._file_stroge_dict[self._rss3_account.address]
+        if irss3 == None and isinstance(irss3, rss3_type.IRSS3Index) and type(irss3) != rss3_type.IRSS3Items:
+            raise TypeError("Address [%s] find irss3 index is error" % self._rss3_account.address)
+
+        items_file = self.get_file(self._rss3_account.address)
+        item_filter_id_list = [item.id for item in irss3.items]
+        index = item_filter_id_list.index(item_id)
+        logger.info(index)
+
+        if item_id not in item_filter_id_list:
+            items_file_id = self._rss3_account.address + '-items-' + str(
+                math.ceil(prase_ele['index'] / config.conf['itemPageSize']))
+            items_file = self.get_file(items_file_id)
+            if items_file != None:
+                item_filter_id_list = [item.id for item in irss3.items]
+                index = item_filter_id_list.index(item_id)
+            else:
+                return None
+
+        return {
+            'file' : items_file,
+            'index' : index
+        }
+
+    def item_get(self, item_id):
+        if item_id == None:
+            raise ValueError("File_id is invalid parameter")
+
+        item = None
+        position = self._get_position(item_id)
+        if position != None :
+            item = position['file'].items[position['index']]
+            if item != None :
+                item_dict = converter.IRSS3ItemSchema().dump(item)
+                item_dict = until.remove_empty_properties(item_dict)
+                item = converter.IInnItemSchema().load(item_dict)
+
+        return item
 
     def item_post(self, inn_item) :
         if isinstance(inn_item, inn_type.IInnItem) == False :
@@ -88,24 +130,27 @@ class RSS3Handle :
         if irss3_index == None :
             raise
 
-        new_item = rss3_type.IRSS3Item()
-        new_item.__dict__.update(inn_item.__dict__)
-        new_item.date_published = now_date
-        new_item.date_modified = now_date
-        new_item_dict = converter.IRSS3ItemSchema().dump(new_item)
-        new_item_dict = until.remove_empty_properties(new_item_dict)
-        new_item.signature = until.sign(new_item_dict, self._rss3_account.private_key)
+        inn_item_dict = converter.IInnProfileSchema().dump(inn_item)
+        inn_item_dict['date_published'] = now_date
+        inn_item_dict['date_modified'] = now_date
 
         id_suffix = 0
         if len(irss3_index.items) != 0 :
-            old_top_id_suffix_str = irss3_index.items[0].id.split('-',2)
+            prase_ele = until.prase_id(irss3_index.items[0].id)
+            old_index = prase_ele['index']
             try :
-                id_suffix = int(old_top_id_suffix_str) + 1
+                id_suffix = old_index + 1
             except Exception as e :
                 raise ValueError("Inn_item conversion failed : %s " % e)
 
         new_item_id = self._rss3_account.address + '-item-' + str(id_suffix)
-        new_item.id = new_item_id
+        inn_item_dict['id'] = new_item_id
+
+        inn_item_dict = until.remove_empty_properties(inn_item_dict)
+        signature = until.sign(inn_item_dict, self._rss3_account.private_key)
+        inn_item_dict['signature'] = signature
+
+        new_item = converter.IRSS3ItemSchema().load(inn_item_dict)
 
         if len(irss3_index.items) + 1 <= config.conf["itemPageSize"] :
             irss3_index.items.insert(0, new_item)
@@ -138,45 +183,37 @@ class RSS3Handle :
 
         return new_item
 
-    def item_get(self, item_id) :
-        if item_id == None :
-            raise ValueError("File_id is invalid parameter")
-
-        irss3 = self._file_stroge_dict[self._rss3_account.address]
-        if irss3 == None and isinstance(irss3, rss3_type.IRSS3Index) and type(irss3) != rss3_type.IRSS3Items:
-            return TypeError("Items_id %s find irss3 index is error" % self._rss3_account.address)
-
-        try:
-            index = irss3.items.index(item_id)
-        except IndexError as e:
-            raise IndexError("Irss3 index error: %s" % e)
-
-        irss3_item_json = converter.IRSS3ItemSchema().dumps(irss3.items[index])
-        inn_item = converter.IInnItemSchema.load(irss3_item_json)
-        return inn_item
-
     def item_patch(self, inn_item) :
-        if inn_item == None :
+        if inn_item == None or \
+            isinstance(inn_item, inn_type.IInnItem) == False or \
+            len(inn_item.id) == 0 :
             raise ValueError("Inn_item and items_id is invalid parameter")
 
         irss3 = self._file_stroge_dict[self._rss3_account.address]
         if irss3 == None and isinstance(irss3, rss3_type.IRSS3Index) == False and isinstance(irss3, rss3_type.IRSS3Items) :
             return TypeError("Items_id %s find irss3 index is error" % self._rss3_account.address)
 
-        try:
-            index = irss3.items.index(inn_item.id)
-        except IndexError as e:
-            raise IndexError("Irss3 index error: %s" % e)
+        now_date = until.get_datetime_isostring()
+        position = self._get_position(inn_item.id)
+        if position != None :
+            logger.info(inn_item.__dict__)
+            inn_item_dict = converter.IInnItemSchema().dump(inn_item)
+            inn_item_dict['date_modified'] = now_date
+            inn_item_dict = until.remove_empty_properties(inn_item_dict)
+            signature = until.sign(inn_item_dict, self._rss3_account.private_key)
+            inn_item_dict['signature'] = signature
+            rss3_item = converter.IRSS3ItemSchema().load(inn_item_dict)
+            position['file'].items[position['index']] = rss3_item
+            self._update(irss3)
 
-        irss3.items[index].__dict__.update(inn_item.__dict__)
-        irss3.items[index].date_modified = until.get_datetime_isostring()
-        self._file_update_tag.add(self._rss3_account.address)
-
-        return irss3.items[index]
+        return position['file'].items[position['index']]
 
     def get_file(self, file_id) :
         if file_id == None:
             raise ValueError("File_id is invalid parameter")
+
+        if self._file_stroge_dict.get(file_id) != None :
+            return self._file_stroge_dict[file_id]
 
         file_get_url = "https://" + self._endpoint + '/' + file_id
         logger.info(file_get_url)
@@ -194,12 +231,13 @@ class RSS3Handle :
                 if check == False :
                     raise ValueError("The file_id %s signature does not match " % file_id)
 
-                # Store files locally
-                irss3_index_schema = converter.IRSS3IndexSchema()
-                irss3_index = irss3_index_schema.load(resp_dict)
-                self._file_stroge_dict[self._rss3_account.address] = irss3_index
+                rss3_obj = until.get_rss3_obj(file_id, resp_dict)
+                self._file_stroge_dict[file_id] = rss3_obj
+                logger.info(rss3_obj)
 
-                return True
+                return rss3_obj
+
+            # 这里要再检验一下
             elif response.status == 400 :
                 now_date = until.get_datetime_isostring()
                 new_rss3obj = until.get_rss3_obj(file_id)
@@ -259,8 +297,11 @@ class RSS3Handle :
         if isinstance(irss3_base, rss3_type.IRSS3Base) == False :
             raise ValueError("irss3_base is invalid parameter")
 
-        logger.info("irss3_base.date_updated: %s " % irss3_base.date_updated)
         irss3_base.date_updated = until.get_datetime_isostring()
-        logger.info("irss3_base.date_updated: %s " % irss3_base.date_updated)
         self._file_stroge_dict[self._rss3_account.address]
         self._file_update_tag.add(self._rss3_account.address)
+
+
+
+
+

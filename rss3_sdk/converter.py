@@ -109,7 +109,7 @@ class IRSS3IndexSchema(Schema):
 class IRSS3ItemsSchema(Schema) :
     id = fields.String(data_key = 'id', required = True)
     a_version = fields.String(data_key = '@version', required = True)
-    date_created = fields.String(data_key = 'date_created', required = True)
+    date_created = fields.String(data_key = 'date_published', required = True)
     date_updated = fields.String(data_key = 'date_updated', required = True)
     signature = fields.String(data_key = 'signature', required = True)
     
@@ -146,6 +146,9 @@ class IInnProfileSchema(Schema) :
         return inn_type.IInnProfile(**data)
 
 class IInnItemSchema(Schema) :
+    class Meta:
+        unknown = EXCLUDE
+
     id = fields.String(data_key = 'id', required = True)
     authors = fields.List(fields.String, data_key = 'authors')
     title = fields.String(data_key = 'title')
@@ -157,9 +160,8 @@ class IInnItemSchema(Schema) :
 
     contents = fields.List(fields.Nested(IRSS3ContentSchema), data_key = 'contents')
 
-    signature = fields.String(data_key = 'signature', required = True)
-
     @post_load
     def make_item(self, data, **kwargs):
+        print(data)
         return inn_type.IInnItem(**data)
 

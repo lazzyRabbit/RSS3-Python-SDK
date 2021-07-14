@@ -4,9 +4,14 @@ from eth_utils import hexadecimal
 from web3.auto import w3
 from rss3_sdk import rss3_account
 from rss3_sdk import rss3_handle
+from rss3_sdk.type import inn_type
 import urllib3
 from rss3_sdk import until
 import json
+
+import logging
+logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(levelname)s - %(lineno)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 if __name__ == '__main__':
 
@@ -32,12 +37,29 @@ if __name__ == '__main__':
         endpoint='hub.rss3.io',
         rss3_account=curr_account)
 
-    inn_profile = handle.profile_get()
-    print(inn_profile)
-    inn_profile.name = "fuck the world"
-    handle.profile_patch(inn_profile)
+    # inn_profile = handle.profile_get()
+    # print(inn_profile)
+    # inn_profile.name = "fuck the world"
+    # handle.profile_patch(inn_profile)
+    # handle.update_file()
+
+    inn_item = handle.item_get("0x13e1ED9aec15Bf75AD081fB5E5466701F4E9bF4B-item-0")
+    logger.info(inn_item.__dict__)
+    inn_item.summary = inn_item.summary + '1'
+    item = handle.item_patch(inn_item)
+    logger.info(item.__dict__)
     handle.update_file()
+    # logger.info(inn_item.__dict__)
+
+    # update a new item
+    # inn_item = inn_type.IInnItem(authors = '0x13e1ED9aec15Bf75AD081fB5E5466701F4E9bF4B',
+    #                              tags = ['nothing'],
+    #                              summary = 'uuu')
+    # handle.item_post(inn_item)
+    # handle.update_file()
     # '''
+
+
 
     # proxy = urllib3.ProxyManager("http://127.0.0.1:4780/")
     # resp1 = proxy.request("GET", "https://www.google.com/")

@@ -4,14 +4,15 @@ python3 version：v3.9.X
 这是一个还未完全跑通的rss3 python sdk
 
 ## 当前暂未解决问题
-
-* 由于时间开发的关系，签名问题暂未解决，导致流程参数暂未调通   
-  这里的坑是开发中遇到的，发现eth_keys和rss3中所用到sign会有不兼容性的问题，这里大概使用的库的兼容性问题   
-  同样的问题go的官方库中也遇到了类似的问题   
-  [rss3go_lib](https://github.com/nyawork/rss3go) 中解决了这个问题  
   
 * 由于时间开发的关系，测试用例暂未编写完整 
-* 由于开发时间的关系，暂未跟得上RSS3-SDK-for-JavaScript的步伐，目前的版本是围绕第一版RSS3-SDK-for-JavaScript第一版进行开发的
+* 由于开发时间的关系，暂时跟上了第一版的开发进程，当然，后期会优化的更加全面
+
+## demo
+
+```python
+
+```
 
 ## API
 
