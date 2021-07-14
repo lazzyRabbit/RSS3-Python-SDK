@@ -6,7 +6,7 @@ from rss3_sdk import rss3_account
 from rss3_sdk import rss3_handle
 from rss3_sdk.type import inn_type
 import urllib3
-from rss3_sdk import until
+from rss3_sdk import until2
 import json
 
 import logging
@@ -82,13 +82,13 @@ if __name__ == '__main__':
 
     # test_dict = json.loads(test_json)
 
-    # test_dict = until.remove_empty_properties(test_dict)
-    # signature = until.sign(test_dict, '47e18d6c386898b424025cd9db446f779ef24ad33a26c499c87bb3d9372540ba')
+    # test_dict = until2.remove_empty_properties(test_dict)
+    # signature = until2.sign(test_dict, '47e18d6c386898b424025cd9db446f779ef24ad33a26c499c87bb3d9372540ba')
     # print(signature)
 
     # curr_account = rss3_account.RSS3Account('47e18d6c386898b424025cd9db446f779ef24ad33a26c499c87bb3d9372540ba')
     # print(curr_account.address)
-    # print(until.check(test_dict, curr_account.address))
+    # print(until2.check(test_dict, curr_account.address))
 
     ###############################
 
@@ -108,7 +108,7 @@ if __name__ == '__main__':
         "signature": "0x38b59e88c9d95d32bb38da812437659a5959b6cefc3794c4348d4660fec49b0a404133f9ff8cd515e8c9af375e0f9d2ab506697d5c398ce807c1df342799be221c"
     }
 
-    test_dict = until.remove_empty_properties(test_dict)
-    signature = until.sign(test_dict, '0xa55afab0f35bdc00c1ac137a98d5d037609eeaead8ba930c4c3878e38630e38a')
+    test_dict = until2.remove_empty_properties(test_dict)
+    signature = until2.sign(test_dict, '0xa55afab0f35bdc00c1ac137a98d5d037609eeaead8ba930c4c3878e38630e38a')
     print(signature)
     '''
