@@ -1,5 +1,6 @@
 import json
 import copy
+import tzlocal
 from .type import rss3_type
 from datetime import datetime
 from . import converter
@@ -11,11 +12,11 @@ logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(le
 logger = logging.getLogger(__name__)
 
 def get_datetime_isostring() :
-    dt = datetime.now()
+    dt = datetime.now(tzlocal.get_localzone())
     try:
-        utc = dt + dt.utcoffset()
+        utc = dt - dt.utcoffset()
     except TypeError as e:
-        utc = dt
+        raise ("Get current UTC Time False, current time %r " % dt)
     isostring = datetime.strftime(utc, '%Y-%m-%dT%H:%M:%S.{0}Z')
     return isostring.format(int(round(utc.microsecond/1000.0)))
 
@@ -91,6 +92,7 @@ def sign(irss3_data, private_key) :
         return None
 
     irss3_json_msg = irss3_data_dump_handle(irss3_data)
+    logger.info(irss3_json_msg)
     message = encode_defunct(text = irss3_json_msg)
 
     return w3.eth.account.sign_message(message, private_key).signature.hex()
@@ -109,37 +111,60 @@ def check(irss3_data, personal_address) :
     return w3.eth.account.recover_message(message, signature=irss3_data['signature']) == personal_address
 
 
-def get_rss3_obj(file_id) :
-    if file_id == None :
-        raise TypeError("File_id is null")
+def get_rss3_obj(file_id, rss3_dict = None) :
+    if file_id == None and (rss3_dict != None or isinstance(rss3_dict, dict)):
+        raise TypeError("File_id and rss3_dict is is invalid parameter")
     if file_id.find('-items-') != -1 :
-        return rss3_type.IRSS3Items(id = file_id)
+        if rss3_dict == None :
+            return rss3_type.IRSS3Items(id = file_id)
+        else :
+            return converter.IRSS3ItemsSchema().load(rss3_dict)
     elif file_id.find('-list-') != -1 :
-        return rss3_type.IRSS3List(id = file_id)
+        if rss3_dict == None :
+            return rss3_type.IRSS3List(id = file_id)
+        else :
+            return converter.IRSS3ListSchema().load(rss3_dict)
     else :
-        return rss3_type.IRSS3Index(id = file_id)
+        if rss3_dict == None :
+            return rss3_type.IRSS3Index(id = file_id)
+        else :
+            return converter.IRSS3IndexSchema().load(rss3_dict)
 
 # return_type == 1 json
 # return_type == 2 dict
-def get_rss3_json_dict(rss3_obj, return_type = 1):
+def get_rss3_json_dict(rss3_obj, return_type = 1) :
     if rss3_obj == None and return_type == None and \
             (return_type != 1 or return_type != 2):
         raise TypeError("Rss3_obj and return_type is is invalid parameter")
 
     return_result = None
-    if isinstance(rss3_obj, rss3_type.IRSS3Items):
+    if isinstance(rss3_obj, rss3_type.IRSS3Items) :
         irss3_items_schema = converter.IRSS3ItemsSchema()
         return_result = irss3_items_schema.dumps(rss3_obj) if return_type == 1 else irss3_items_schema.dump(rss3_obj)
-    elif isinstance(rss3_obj, rss3_type.IRSS3List):
+    elif isinstance(rss3_obj, rss3_type.IRSS3List) :
         irss3_list_schema = converter.IRSS3ListSchema()
         return_result = irss3_list_schema.dumps(rss3_obj) if return_type == 1 else irss3_list_schema.dump(rss3_obj)
-    elif isinstance(rss3_obj, rss3_type.IRSS3Index):
+    elif isinstance(rss3_obj, rss3_type.IRSS3Index) :
         irss3_index_schema = converter.IRSS3IndexSchema()
         return_result = irss3_index_schema.dumps(rss3_obj) if return_type == 1 else irss3_index_schema.dump(rss3_obj)
     else :
         raise TypeError("Rss3_obj type is %s, cannot be converted to the specified type" % type(rss3_obj))
 
     return return_result
+
+#########################################
+
+def prase_id(id) :
+    split_list = id.split('-')
+    address = split_list[0]
+    type = split_list[1]
+    index = None
+    if len(split_list) >= 3 :
+        index = int(split_list[2])
+    return {'address':address,
+            'type':type,
+            'index':index}
+
 
 
 

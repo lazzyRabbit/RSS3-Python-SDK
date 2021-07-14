@@ -1,5 +1,3 @@
-import copy
-
 #########################################
 class IRSS3Content():
     def __init__(self, address = [], mime_type = None, name = None, tags = [], size_in_bytes = None, duration_in_seconds = None) :   
