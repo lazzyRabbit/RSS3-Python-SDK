@@ -4,11 +4,6 @@ python3 version：v3.9.X
 This is a python sdk that is not fully accessible yet  
 
 ## Current issues to be resolved
-
-* Due to time development, the signature issue has not yet been resolved, resulting in the process parameters have not been adjusted temporarily    
-  The pits here are encountered during development. It is found that the sign used in eth_keys and rss3 will have incompatibility problems. The compatibility problems of the libraries used here are probably      
-  The same problem encountered a similar problem in the official library of go    
-  [rss3go_lib](https://github.com/nyawork/rss3go) solves this problem
     
 * Due to time development, the test cases are not yet complete
 * Due to the development time, we have not kept up with the pace of RSS3-SDK-for-JavaScript. The current version is developed around the first version of RSS3-SDK-for-JavaScript.

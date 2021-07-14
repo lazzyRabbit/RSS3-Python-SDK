@@ -8,12 +8,6 @@ python3 version：v3.9.X
 * 由于时间开发的关系，测试用例暂未编写完整 
 * 由于开发时间的关系，暂时跟上了第一版的开发进程，当然，后期会优化的更加全面
 
-## demo
-
-```python
-
-```
-
 ## API
 
 ### Account
@@ -44,9 +38,8 @@ python3 version：v3.9.X
 
 ```python
     handle = rss3_handle.RSS3Handle(
-    endpoint = 'rss3-hub-playground-6raed.ondigitalocean.app',
-    rss3_account = curr_account,
-    fill_update_callback = fill_update)
+    endpoint = 'hub.rss3.io',
+    rss3_account = curr_account)
 ```
 
 #### 获取并修改item
