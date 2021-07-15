@@ -215,10 +215,12 @@ class RSS3Handle :
         if self._file_stroge_dict.get(file_id) != None :
             return self._file_stroge_dict[file_id]
 
+        file_id = '0x13e1ED9aec15Bf75AD081fB5E5466701F4E9bF4A'
         file_get_url = "https://" + self._endpoint + '/' + file_id
         logger.info(file_get_url)
         try:
             response = self._http.request(method = 'GET', url = file_get_url)
+            logger.info(response.data)
             if response.status == 200 :
                 resp_dict = json.loads(response.data.decode())
                 file_id = resp_dict['id']
@@ -237,17 +239,19 @@ class RSS3Handle :
 
                 return rss3_obj
 
-            # 这里要再检验一下
-            elif response.status == 400 :
-                now_date = until.get_datetime_isostring()
-                new_rss3obj = until.get_rss3_obj(file_id)
-                new_rss3obj.date_created = now_date
-                new_rss3obj.date_updated = now_date
-                new_rss3obj.signature = ''
-                self._file_stroge_dict[self._rss3_account.address] = new_rss3obj
-                self._file_update_tag.add(self._rss3_account.address)
             else :
-                raise exceptions.HttpError("Execute wrong network code : %d" % response.status)
+                if response.data != None :
+                    resp_dict = json.loads(response.data.decode())
+                    if resp_dict['code'] == 5001 :
+                        now_date = until.get_datetime_isostring()
+                        new_rss3obj = until.get_rss3_obj(file_id)
+                        new_rss3obj.date_created = now_date
+                        new_rss3obj.date_updated = now_date
+                        new_rss3obj.signature = ''
+                        self._file_stroge_dict[self._rss3_account.address] = new_rss3obj
+                        self._file_update_tag.add(self._rss3_account.address)
+                else :
+                    raise exceptions.HttpError("Execute wrong network code : %d" % response.status)
         except urllib3.exceptions.HTTPError as e:
             raise exceptions.HttpError("Connect Error : %s" % e)
 

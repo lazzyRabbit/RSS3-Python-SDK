@@ -43,12 +43,12 @@ if __name__ == '__main__':
     # handle.profile_patch(inn_profile)
     # handle.update_file()
 
-    inn_item = handle.item_get("0x13e1ED9aec15Bf75AD081fB5E5466701F4E9bF4B-item-0")
-    logger.info(inn_item.__dict__)
-    inn_item.summary = inn_item.summary + '1'
-    item = handle.item_patch(inn_item)
-    logger.info(item.__dict__)
-    handle.update_file()
+    # inn_item = handle.item_get("0x13e1ED9aec15Bf75AD081fB5E5466701F4E9bF4B-item-0")
+    # logger.info(inn_item.__dict__)
+    # inn_item.summary = inn_item.summary + '1'
+    # item = handle.item_patch(inn_item)
+    # logger.info(item.__dict__)
+    # handle.update_file()
     # logger.info(inn_item.__dict__)
 
     # update a new item
