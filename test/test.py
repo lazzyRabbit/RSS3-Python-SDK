@@ -24,10 +24,10 @@ if __name__ == '__main__':
     # message = encode_defunct(text=msg)
 
 
-    curr_account = rss3_account.RSS3Account('0xa9906ccd61f51e079f5fee80cd8cde0e94346a5244f783287ec3051591e86b68')
-    handle = rss3_handle.RSS3Handle(
-        endpoint='rss3-hub-playground-6raed.ondigitalocean.app',
-        rss3_account=curr_account)
+    # curr_account = rss3_account.RSS3Account('0xa9906ccd61f51e079f5fee80cd8cde0e94346a5244f783287ec3051591e86b68')
+    # handle = rss3_handle.RSS3Handle(
+    #     endpoint='rss3-hub-playground-6raed.ondigitalocean.app',
+    #     rss3_account=curr_account)
 
     # curr_account = rss3_account.RSS3Account('0x47e18d6c386898b424025cd9db446f779ef24ad33a26c499c87bb3d9372540ba')
     # handle = rss3_handle.RSS3Handle(
@@ -35,14 +35,14 @@ if __name__ == '__main__':
     #     rss3_account=curr_account)
 
     # '''
-    # curr_account = rss3_account.RSS3Account('0xa55afab0f35bdc00c1ac137a98d5d037609eeaead8ba930c4c3878e38630e38a')
-    # handle = rss3_handle.RSS3Handle(
-    #     endpoint='hub.rss3.io',
-    #     rss3_account=curr_account)
+    curr_account = rss3_account.RSS3Account('0xa55afab0f35bdc00c1ac137a98d5d037609eeaead8ba930c4c3878e38630e38a')
+    handle = rss3_handle.RSS3Handle(
+        endpoint='hub.rss3.io',
+        rss3_account=curr_account)
 
     # inn_profile = handle.profile_get()
     # print(inn_profile)
-    # inn_profile.name = "fuck the world"
+    # inn_profile.name = "fuck the world2"
     # handle.profile_patch(inn_profile)
     # handle.update_file()
 
@@ -55,11 +55,11 @@ if __name__ == '__main__':
     # logger.info(inn_item.__dict__)
 
     # update a new item
-    inn_item = inn_type.IInnItem(authors = ['0x13e1ED9aec15Bf75AD081fB5E5466701F4E9bF4B'],
-                                 tags = ['nothing'],
-                                 summary = 'Hello')
-    handle.item_post(inn_item)
-    handle.update_file()
+    # inn_item = inn_type.IInnItem(authors = ['0x13e1ED9aec15Bf75AD081fB5E5466701F4E9bF4B'],
+    #                              tags = ['nothing'],
+    #                              summary = 'Hello')
+    # handle.item_post(inn_item)
+    # handle.update_file()
     # '''
 
 
