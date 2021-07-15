@@ -1,13 +1,5 @@
-import hexbytes
-from eth_keys import keys, datatypes
-from eth_utils import hexadecimal
-from web3.auto import w3
-from rss3_sdk import rss3_account
+from rss3_sdk.until2 import account
 from rss3_sdk import rss3_handle
-from rss3_sdk.type import inn_type
-import urllib3
-from rss3_sdk import until2
-import json
 
 import logging
 logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(levelname)s - %(lineno)s - %(message)s')
@@ -32,7 +24,7 @@ if __name__ == '__main__':
     #     rss3_account=curr_account)
 
     # '''
-    curr_account = rss3_account.RSS3Account('0xa55afab0f35bdc00c1ac137a98d5d037609eeaead8ba930c4c3878e38630e38a')
+    curr_account = account.RSS3Account('0xa55afab0f35bdc00c1ac137a98d5d037609eeaead8ba930c4c3878e38630e38a')
     handle = rss3_handle.RSS3Handle(
         endpoint='hub.rss3.io',
         rss3_account=curr_account)

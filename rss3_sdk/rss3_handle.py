@@ -1,12 +1,10 @@
-import sys
 import math
 import json
 import urllib3
 from . import until2
 from . import config
-from . import converter
-from . import exceptions
-from .type import rss3_type
+from .until2 import exceptions
+from .type import rss3_type, converter
 from .type import inn_type
 
 import logging

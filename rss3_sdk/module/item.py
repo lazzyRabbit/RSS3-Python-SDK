@@ -3,7 +3,8 @@ from . import (
 )
 
 class Item(base.BaseModule):
-    def __init__(self):
+    def __init__(self, option):
+        base.BaseModule.__init__(self, option)
         pass
 
     def get(self):

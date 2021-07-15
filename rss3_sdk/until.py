@@ -1,9 +1,8 @@
 import json
 import copy
 import tzlocal
-from .type import rss3_type
+from .type import rss3_type, converter
 from datetime import datetime
-from . import converter
 from web3.auto import w3
 from eth_account.messages import encode_defunct
 
