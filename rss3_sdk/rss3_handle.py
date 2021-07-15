@@ -130,9 +130,10 @@ class RSS3Handle :
         if irss3_index == None :
             raise
 
-        inn_item_dict = converter.IInnProfileSchema().dump(inn_item)
+        inn_item_dict = converter.IInnItemSchema().dump(inn_item)
         inn_item_dict['date_published'] = now_date
         inn_item_dict['date_modified'] = now_date
+        logger.info(inn_item_dict)
 
         id_suffix = 0
         if len(irss3_index.items) != 0 :
@@ -161,14 +162,14 @@ class RSS3Handle :
 
             if irss3_index.items != None :
                 try:
-                    old_iterms_id_suffix = int(irss3_index.items[0].id.split('-',2))
+                    old_iterms_id_suffix = until.prase_id(irss3_index.items[0].id)['index']
                 except Exception as e:
                      raise TypeError("iterms first id %s is error" % irss3_index.items[0].id)
 
             new_iterms_id = self._rss3_account.address + '-iterms-' + str(old_iterms_id_suffix + 1)
             irss3_iterms = rss3_type.IRSS3Items(id = new_iterms_id,
                                                 a_version = 'rss3.io/version/v0.1.0',
-                                                date_createds = now_date,
+                                                date_created = now_date,
                                                 signature = '',
                                                 items = new_items,
                                                 items_next = irss3_index.items_next)
@@ -196,7 +197,6 @@ class RSS3Handle :
         now_date = until.get_datetime_isostring()
         position = self._get_position(inn_item.id)
         if position != None :
-            logger.info(inn_item.__dict__)
             inn_item_dict = converter.IInnItemSchema().dump(inn_item)
             inn_item_dict['date_modified'] = now_date
             inn_item_dict = until.remove_empty_properties(inn_item_dict)
@@ -215,7 +215,6 @@ class RSS3Handle :
         if self._file_stroge_dict.get(file_id) != None :
             return self._file_stroge_dict[file_id]
 
-        file_id = '0x13e1ED9aec15Bf75AD081fB5E5466701F4E9bF4A'
         file_get_url = "https://" + self._endpoint + '/' + file_id
         logger.info(file_get_url)
         try:
@@ -257,7 +256,7 @@ class RSS3Handle :
 
     def update_file(self) :
         file_get_url = "https://" + self._endpoint
-        contents = []
+        contents = list()
 
         for file_name in self._file_update_tag :
             file = self._file_stroge_dict.get(file_name)
