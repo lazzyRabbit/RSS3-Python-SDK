@@ -5,13 +5,12 @@ This is a python sdk that is not fully accessible yet
 
 ## Current issues to be resolved
 
-* Due to time development, the signature issue has not yet been resolved, resulting in the process parameters have not been adjusted temporarily    
-  The pits here are encountered during development. It is found that the sign used in eth_keys and rss3 will have incompatibility problems. The compatibility problems of the libraries used here are probably      
-  The same problem encountered a similar problem in the official library of go    
-  [rss3go_lib](https://github.com/nyawork/rss3go) solves this problem
-    
-* Due to time development, the test cases are not yet complete
-* Due to the development time, we have not kept up with the pace of RSS3-SDK-for-JavaScript. The current version is developed around the first version of RSS3-SDK-for-JavaScript.
+* Due to time development, the test case has not yet been written completely
+* Due to the development time, I have temporarily kept up with the development process of the first version. Of course, it will be optimized more comprehensively in the later period.
+
+## Fix the problem
+
+* Sign signature mechanism
 
 ## API
 
@@ -70,8 +69,8 @@ This is a python sdk that is not fully accessible yet
 
 ## Next step plan
 
-* Solve the signature problem, adjust the overall interface, complete the release of the first version, and push the toolkit to pip
-* Develop with the latest official js version of the SDK, split the module into more detail, and separate the file, item, and items.
+* Develop with the latest official js version of the SDK (there will be slightly different), split the module into more detail, split the file, item, and items, and publish it to pip
+
 
 ## Final appeal
  Since I have too little time and stepped on more pits, I hope that colleagues who have the time can give more valuable opinions and cooperate in development.

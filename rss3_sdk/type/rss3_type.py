@@ -1,5 +1,3 @@
-import copy
-
 #########################################
 class IRSS3Content():
     def __init__(self, address = [], mime_type = None, name = None, tags = [], size_in_bytes = None, duration_in_seconds = None) :   
@@ -36,7 +34,7 @@ class IRSS3Item():
 
 #########################################
 
-class IRSS3Profile :
+class IRSS3Profile() :
     def __init__(self, name = None, avatar = None, bio = None, tags = [], signature = None) :
         self.name = name
         self.avatar = avatar
@@ -46,7 +44,7 @@ class IRSS3Profile :
 
 #########################################
 
-class IRSS3Base :
+class IRSS3Base() :
     def __init__(self, id = None, a_version = 'rss3.io/version/v0.1.0', date_created = 0, date_updated = 0, signature = None) :
         self.id = id
         self.a_version = a_version
