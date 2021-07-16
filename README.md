@@ -1,7 +1,7 @@
 # RSS3 Python SDK
 
-python3 version：v3.9.X  
-This is a python sdk that is not fully accessible yet  
+python3 version: v3.9.X  
+SDK version: 0.1.0-alpha
 
 ## Current issues to be resolved
 
@@ -29,7 +29,7 @@ This is a python sdk that is not fully accessible yet
 #### Initialize with the original private key
 
 ```python
-    curr_account = rss3_account.RSS3Account('0xa55afab0f35bdc00c1ac137a98d5d037609eeaead8ba930c4c3878e38630e38a')
+    curr_account = rss3_account.RSS3Account('0x47e18d6c386898b424025cd9db446f779ef24ad33a26c499c87bb3d9372540ba')
 ```
 
 ### RSS3Handle
