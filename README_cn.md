@@ -1,7 +1,7 @@
 # RSS3 Python SDK
 
 python3 version：v3.9.X  
-版本0.1.0 beta版
+SDK版本：0.1.0-alpha版
 
 ## 当前暂未解决问题
   
@@ -29,7 +29,7 @@ python3 version：v3.9.X
 #### 用原来的私钥进行初始化
 
 ```python
-    curr_account = rss3_account.RSS3Account('0xa55afab0f35bdc00c1ac137a98d5d037609eeaead8ba930c4c3878e38630e38a')
+    curr_account = rss3_account.RSS3Account('0x47e18d6c386898b424025cd9db446f779ef24ad33a26c499c87bb3d9372540ba')
 ```
 
 ### RSS3Handle
