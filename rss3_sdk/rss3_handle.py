@@ -9,10 +9,6 @@ from . import exceptions
 from .type import rss3_type
 from .type import inn_type
 
-import logging
-logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(levelname)s - %(lineno)s - %(message)s')
-logger = logging.getLogger(__name__)
-
 class RSS3Handle :
     def __init__(self, endpoint, rss3_account, fill_update_callback = None) :
         self._endpoint = endpoint
@@ -20,7 +16,6 @@ class RSS3Handle :
         self._fill_update_callback = fill_update_callback
 
         if 'proxy' in config.conf :
-            logger.info(config.conf['proxy'])
             self._http = urllib3.ProxyManager(config.conf['proxy'])
         else :
             self._http = urllib3.PoolManager()
@@ -36,13 +31,13 @@ class RSS3Handle :
             self.get_file(self._rss3_account.address)
         else :
             now_date = until.get_datetime_isostring()
-            irss3_index = rss3_type.IRSS3Index(id = self._rss3_account.address,
+            personl_file = rss3_type.IRSS3Index(id = self._rss3_account.address,
                                                date_created = now_date,
                                                date_updated = now_date)
-            self._file_stroge_dict[self._rss3_account.address] = irss3_index
+            self._file_stroge_dict[self._rss3_account.address] = personl_file
             self._file_update_tag.add(self._rss3_account.address)
 
-#profile used
+# profile used
     def profile_get(self):
         personl_file = self._file_stroge_dict[self._rss3_account.address]
         if personl_file == None:
@@ -89,7 +84,6 @@ class RSS3Handle :
         items_file = self.get_file(self._rss3_account.address)
         item_filter_id_list = [item.id for item in personl_file.items]
         index = item_filter_id_list.index(item_id)
-        logger.info(index)
 
         if item_id not in item_filter_id_list:
             items_file_id = self._rss3_account.address + '-items-' + str(
@@ -133,7 +127,6 @@ class RSS3Handle :
         inn_item_dict = converter.IInnItemSchema().dump(inn_item)
         inn_item_dict['date_published'] = now_date
         inn_item_dict['date_modified'] = now_date
-        logger.info(inn_item_dict)
 
         id_suffix = 0
         if len(personl_file.items) != 0 :
@@ -159,7 +152,6 @@ class RSS3Handle :
             new_items_list = list()
             new_items_list.append(new_item)
             old_items_id_suffix = 0 if personl_file.items_next == None else until.prase_id(personl_file.items_next)['index'] + 1
-            logger.info(old_items_id_suffix)
 
             new_items_id = self._rss3_account.address + '-items-' + str(old_items_id_suffix)
             new_items = rss3_type.IRSS3Items(id = new_items_id,
@@ -211,10 +203,8 @@ class RSS3Handle :
             return self._file_stroge_dict[file_id]
 
         file_get_url = "https://" + self._endpoint + '/' + file_id
-        logger.info(file_get_url)
         try:
             response = self._http.request(method = 'GET', url = file_get_url)
-            logger.info(response.data)
             if response.status == 200 :
                 resp_dict = json.loads(response.data.decode())
                 file_id = resp_dict['id']
@@ -229,7 +219,6 @@ class RSS3Handle :
 
                 rss3_obj = until.get_rss3_obj(file_id, resp_dict)
                 self._file_stroge_dict[file_id] = rss3_obj
-                logger.info(rss3_obj)
 
                 return rss3_obj
 
@@ -258,7 +247,6 @@ class RSS3Handle :
             if file != None :
                 try :
                     file_dict = until.get_rss3_json_dict(file, 2)
-                    logger.info(file_dict)
                 except TypeError as e :
                     continue
                 file_dict = until.remove_empty_properties(file_dict)
@@ -269,9 +257,7 @@ class RSS3Handle :
         contents_dict = {
             "contents" : contents
         }
-        logger.info(contents_dict)
         content_json_str = json.dumps(contents_dict, ensure_ascii = False).encode("utf-8")
-        logger.info(content_json_str)
 
         try:
             response = self._http.request(method = 'PUT',
