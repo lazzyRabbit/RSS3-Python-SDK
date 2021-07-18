@@ -2,13 +2,24 @@ from rss3_sdk.until2 import (
     account as rss3_account
 )
 
-class ModuleOption:
-    def __init__(self, account, endpoint='hub.rss3.io'):
-        self._endpoint = endpoint
-        self._account = account
-        if self._account == None or isinstance(account, rss3_account.RSS3Account) == False:
-            raise ValueError("Account is invalid parameter")
+from rss3_sdk.core import (
+    local_stroge as stroge
+)
 
+class ModuleOption:
+    def __init__(self,
+                 account,
+                 file_stroge=stroge.LocalStroge(),
+                 endpoint='hub.rss3.io'):
+
+        if account == None or isinstance(account, rss3_account.Account) == False\
+        or file_stroge == None or isinstance(file_stroge, stroge.LocalStroge) == False\
+        or endpoint == None or isinstance(endpoint, str):
+            raise ValueError("Invalid parameter")
+
+        self.account = account
+        self.file_stroge = file_stroge
+        self.endpoint = endpoint
 
 class BaseModule:
     def __init__(self, option):

@@ -111,7 +111,7 @@ class IRSS3ItemsSchema(Schema) :
     a_version = fields.String(data_key = '@version', required = True)
     date_created = fields.String(data_key = 'date_published', required = True)
     date_updated = fields.String(data_key = 'date_updated', required = True)
-    signature = fields.String(data_key = 'signature', required = True)
+    signature = fields.String(data_key = 'signature')
     
     items = fields.Nested(IRSS3ItemSchema, data_key = 'item', required = True)
     items_next = fields.String(data_key = 'items_next', required = True)

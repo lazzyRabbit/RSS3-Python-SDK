@@ -6,10 +6,6 @@ from datetime import datetime
 from web3.auto import w3
 from eth_account.messages import encode_defunct
 
-import logging
-logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(levelname)s - %(lineno)s - %(message)s')
-logger = logging.getLogger(__name__)
-
 def get_datetime_isostring() :
     dt = datetime.now(tzlocal.get_localzone())
     try:
@@ -91,7 +87,6 @@ def sign(irss3_data, private_key) :
         return None
 
     irss3_json_msg = irss3_data_dump_handle(irss3_data)
-    logger.info(irss3_json_msg)
     message = encode_defunct(text = irss3_json_msg)
 
     return w3.eth.account.sign_message(message, private_key).signature.hex()
@@ -101,12 +96,7 @@ def check(irss3_data, personal_address) :
         return False
 
     irss3_json_msg = irss3_data_dump_handle(irss3_data)
-    logger.info(irss3_json_msg)
     message = encode_defunct(text = irss3_json_msg)
-    logger.info(irss3_data['signature'])
-    ddd = w3.eth.account.recover_message(message, signature = irss3_data['signature'])
-    logger.info(ddd)
-    # logger.info(type(personal_address), personal_address)
     return w3.eth.account.recover_message(message, signature=irss3_data['signature']) == personal_address
 
 

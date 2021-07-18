@@ -4,9 +4,13 @@ python3 version：v3.9.X
 This is a python sdk that is not fully accessible yet  
 
 ## Current issues to be resolved
-    
-* Due to time development, the test cases are not yet complete
-* Due to the development time, we have not kept up with the pace of RSS3-SDK-for-JavaScript. The current version is developed around the first version of RSS3-SDK-for-JavaScript.
+
+* Due to time development, the test case has not yet been written completely
+* Due to the development time, I have temporarily kept up with the development process of the first version. Of course, it will be optimized more comprehensively in the later period.
+
+## Fix the problem
+
+* Sign signature mechanism
 
 ## API
 
@@ -66,8 +70,8 @@ from rss3_sdk.until2 import account
 
 ## Next step plan
 
-* Solve the signature problem, adjust the overall interface, complete the release of the first version, and push the toolkit to pip
-* Develop with the latest official js version of the SDK, split the module into more detail, and separate the file, item, and items.
+* Develop with the latest official js version of the SDK (there will be slightly different), split the module into more detail, split the file, item, and items, and publish it to pip
+
 
 ## Final appeal
  Since I have too little time and stepped on more pits, I hope that colleagues who have the time can give more valuable opinions and cooperate in development.
