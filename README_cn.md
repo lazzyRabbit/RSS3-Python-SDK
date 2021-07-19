@@ -18,7 +18,7 @@ python3 version：v3.9.X
 
 ```python
 
-from rss3_sdk.until2 import account
+from rss3_sdk.core import account
 ```
 
 #### 生成一个新的账户

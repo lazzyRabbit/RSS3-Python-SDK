@@ -15,7 +15,7 @@ class IRSS3Context() :
         self.list_next = list_next
 
 class IRSS3Item():
-    def __init__(self, id = None, authors = [], title = None, summary = None, tags = [], date_published = None, date_modified = None, type = None, upstream = None, contents = [], a_contexts = [], signature = None) :
+    def __init__(self, id = None, authors = [], title = None, summary = None, tags = [], date_published = None, date_modified = None, type = None, upstream = None, contents = [], a_contexts = [], signature = '') :
         self.id = id
         self.authors = authors
         self.title = title
@@ -35,7 +35,7 @@ class IRSS3Item():
 #########################################
 
 class IRSS3Profile() :
-    def __init__(self, name = None, avatar = None, bio = None, tags = [], signature = None) :
+    def __init__(self, name = None, avatar = None, bio = None, tags = [], signature = '') :
         self.name = name
         self.avatar = avatar
         self.bio = bio
@@ -45,7 +45,7 @@ class IRSS3Profile() :
 #########################################
 
 class IRSS3Base:
-    def __init__(self, id = None, a_version = 'rss3.io/version/v0.1.0', date_created = 0, date_updated = 0, signature = None) :
+    def __init__(self, id = None, a_version = 'rss3.io/version/v0.1.0', date_created = 0, date_updated = 0, signature = '') :
         self.id = id
         self.a_version = a_version
         self.date_created = date_created
@@ -54,7 +54,7 @@ class IRSS3Base:
 
 #########################################
 class IRSS3Link:
-    def __init__(self, type = None, tags = [], list = [], list_next = None, signature = None) :
+    def __init__(self, type = None, tags = [], list = [], list_next = None, signature = '') :
         self.type = type
         self.tags = tags
         self.list = list
@@ -74,7 +74,7 @@ class IRSS3Asset:
         self.content = content
 
 class IRSS3Index(IRSS3Base):
-    def __init__(self, id = None, a_version = 'rss3.io/version/v0.1.0', date_created = 0, date_updated = 0, signature = None, \
+    def __init__(self, id = None, a_version = 'rss3.io/version/v0.1.0', date_created = 0, date_updated = 0, signature = '', \
                 profile = None, items = [], items_next = None, links = [], a_backlinks = [], assets = []) :
         super().__init__(id, a_version, date_created, date_updated, signature)
 
@@ -89,7 +89,7 @@ class IRSS3Index(IRSS3Base):
 
 #########################################
 class IRSS3Items(IRSS3Base):
-    def __init__(self, id = None, a_version = 'rss3.io/version/v0.1.0', date_created = 0, date_updated = 0, signature = None, \
+    def __init__(self, id = None, a_version = 'rss3.io/version/v0.1.0', date_created = 0, date_updated = 0, signature = '', \
                 items = [], items_next = None) :
         super().__init__(id, a_version, date_created, date_updated, signature)
         self.items = items
