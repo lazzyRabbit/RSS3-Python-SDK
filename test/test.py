@@ -1,4 +1,4 @@
-from rss3_sdk.core import account
+from rss3_sdk.module.base import account
 from rss3_sdk import rss3_handle
 
 import logging

@@ -1,6 +1,4 @@
-from . import (
-    base
-)
+from rss3_sdk.module.rss3 import base
 
 from rss3_sdk.type import (
     inn_type,
@@ -10,8 +8,7 @@ from rss3_sdk.type import (
 
 from rss3_sdk.until import (
     data_handle,
-    sign_handle,
-    time
+    sign_handle
 )
 
 class Profile(base.BaseModule):

@@ -1,6 +1,5 @@
-from . import (
-    base
-)
+from rss3_sdk.module.rss3 import base
+
 
 class Items(base.BaseModule):
     def __init__(self, option):

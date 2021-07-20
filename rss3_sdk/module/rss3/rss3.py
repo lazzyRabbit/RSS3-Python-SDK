@@ -1,9 +1,5 @@
-from . import (
-    file as rss3_file,
-    item as rss3_item,
-    items as rss3_items,
-    profile as rss_profile
-)
+from rss3_sdk.module.rss3 import file as rss3_file, items as rss3_items, profile as rss_profile, item as rss3_item
+
 
 class RSS3():
     def __init__(self, option):

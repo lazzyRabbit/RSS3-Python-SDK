@@ -1,9 +1,6 @@
 import urllib3
 
-from rss3_sdk.core import (
-    base_stroge as stroge,
-    account as rss3_account
-)
+from rss3_sdk.module.base import account as rss3_account, base_stroge as stroge
 
 from rss3_sdk import (
     config

@@ -1,8 +1,6 @@
 import hexbytes
 
-from rss3_sdk.module import (
-    base
-)
+from rss3_sdk.module.rss3 import base
 
 from eth_keys import (
     keys
@@ -12,7 +10,7 @@ from eth_account import (
     account
 )
 
-class Account(base.BaseModule):
+class Account():
     def __init__(self, option, private_key = None):
         base.BaseModule.__init__(self, option)
         self.private_key = private_key

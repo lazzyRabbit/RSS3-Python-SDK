@@ -1,9 +1,7 @@
 import json
 import urllib3
 
-from . import (
-    base
-)
+from rss3_sdk.module.rss3 import base
 
 from rss3_sdk.until import (
     sign_handle,

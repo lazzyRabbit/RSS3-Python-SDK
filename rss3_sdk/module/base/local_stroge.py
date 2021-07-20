@@ -1,6 +1,5 @@
-from . import (
-    base_stroge
-)
+from rss3_sdk.module.base import base_stroge
+
 
 class LocalStroge(base_stroge.BaseStroge):
     def __init__(self):
