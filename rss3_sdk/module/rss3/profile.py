@@ -13,11 +13,11 @@ from rss3_sdk.until import (
 
 class Profile(base.BaseModule):
     def __init__(self, option):
-        base.BaseModule.__init__(self, option)
+        super().__init__(option)
         pass
 
     def get(self):
-        personl_file = self._option.stroge.get_file(self._option.account.address)
+        personl_file = self._option.rss3_stroge.get(self._option.account.address)
         if personl_file == None:
             raise ValueError("can not find %s in stroge" % self._option.account.address)
 
@@ -35,7 +35,7 @@ class Profile(base.BaseModule):
         if isinstance(inn_data, inn_type.IInnProfile) == False and inn_data != None:
             raise ValueError("Inn_profile is invalid parameter")
 
-        personl_file = self._option.stroge.get_file(self._option.account.address)
+        personl_file = self._option.rss3_stroge.get(self._option.account.address)
         if personl_file == None:
             raise ValueError("can not find %s in stroge" % self._option.account.address)
 

@@ -1,6 +1,8 @@
 import math
 
-from rss3_sdk.module.rss3 import base
+from rss3_sdk.module.rss3 import (
+    base as rss3_base
+)
 
 from rss3_sdk import (
     config
@@ -19,9 +21,9 @@ from rss3_sdk.type import (
     converter
 )
 
-class Item(base.BaseModule):
+class Item(rss3_base.BaseModule):
     def __init__(self, option):
-        base.BaseModule.__init__(self, option)
+        super().__init__(option)
 
     def get(self, file_id):
         if file_id == None:
@@ -44,7 +46,7 @@ class Item(base.BaseModule):
             len(inn_data.id) == 0:
             raise ValueError("Inn_item and items_id is invalid parameter")
 
-        personl_file = self._option.stroge.get_file(self._option.account.address)
+        personl_file = self._option.rss3_stroge.get(self._option.account.address)
         if personl_file == None and isinstance(personl_file, rss3_type.IRSS3Index) == False and \
             isinstance(personl_file, rss3_type.IRSS3Items) :
             raise TypeError("Items_id %s find irss3 index is error" % self._option.account.address)
@@ -68,7 +70,7 @@ class Item(base.BaseModule):
             raise ValueError("Inn_item is invalid parameter")
 
         now_date = time.get_datetime_isostring()
-        personl_file = self._option.stroge.get_file(self._option.account.address)
+        personl_file = self._option.rss3_stroge.get(self._option.account.address)
         if personl_file == None:
             raise
 
@@ -124,19 +126,19 @@ class Item(base.BaseModule):
         if prase_ele['address'] != self._option.account.address:
             raise ValueError("File_id is invalid parameter, address %s is error." % prase_ele['address'])
 
-        personl_file = self._file_stroge_dict[self._option.account.address]
+        personl_file = self._option.rss3_stroge.get(self._option.account.address)
         if personl_file == None and isinstance(personl_file, rss3_type.IRSS3Index) and type(
                 personl_file) != rss3_type.IRSS3Items:
             raise TypeError("Address [%s] find irss3 index is error" % self._option.account.address)
 
-        items_file = self.get_file(self._option.account.address)
+        items_file = personl_file
         item_filter_id_list = [item.id for item in personl_file.items]
         index = item_filter_id_list.index(item_id)
 
         if item_id not in item_filter_id_list:
             items_file_id = self._option.account.address + '-items-' + str(
                 math.ceil(prase_ele['index'] / config.conf['itemPageSize']))
-            items_file = self.get_file(items_file_id)
+            items_file = self._option.rss3_stroge.get(items_file_id)
             if items_file != None:
                 item_filter_id_list = [item.id for item in personl_file.items]
                 index = item_filter_id_list.index(item_id)

@@ -57,7 +57,7 @@ def sorted_irss_dict(data) :
     elif value_is_not_empty(data) :
         return data
 
-def irss3_data_dump_handle(irss3_data) :
+def rss3_data_dump_handle(irss3_data) :
     not_sign_irss3_data = copy.deepcopy(irss3_data)
     not_sign_irss3_data = remove_not_sign_properties(not_sign_irss3_data)
     not_sign_irss3_data = sorted_irss_dict(not_sign_irss3_data)

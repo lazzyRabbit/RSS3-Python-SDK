@@ -1,5 +1,6 @@
-from rss3_sdk.module.base import base_stroge
-
+from rss3_sdk.module.base import (
+    base_stroge
+)
 
 class LocalStroge(base_stroge.BaseStroge):
     def __init__(self):
@@ -15,4 +16,8 @@ class LocalStroge(base_stroge.BaseStroge):
         if id == None:
             raise ValueError("Id is invalid parameter")
 
-        return self._file_stroge_dict[id]
+        if id in self._file_stroge_dict:
+            return self._file_stroge_dict[id]
+        else:
+            return None
+

@@ -1,6 +1,10 @@
 import urllib3
 
-from rss3_sdk.module.base import account as rss3_account, base_stroge as stroge
+from rss3_sdk.module.base import (
+    account as rss3_account,
+    base_stroge,
+    local_stroge
+)
 
 from rss3_sdk import (
     config
@@ -14,15 +18,19 @@ from rss3_sdk.type import (
     rss3_type
 )
 
+import logging
+logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(levelname)s - %(lineno)s - %(message)s')
+logger = logging.getLogger(__name__)
+
 class ModuleOption:
     def __init__(self,
                  account,
-                 file_stroge=stroge.LocalStroge(),
-                 endpoint='hub.rss3.io'):
+                 file_stroge = local_stroge.LocalStroge(),
+                 endpoint = 'hub.rss3.io'):
 
         if account == None or isinstance(account, rss3_account.Account) == False\
-        or file_stroge == None or isinstance(file_stroge, stroge.BaseStroge) == False\
-        or endpoint == None or isinstance(endpoint, str):
+        or file_stroge == None or isinstance(file_stroge, base_stroge.BaseStroge) == False\
+        or endpoint == None or isinstance(endpoint, str) == False:
             raise ValueError("Invalid parameter")
 
         self.account = account
@@ -34,6 +42,8 @@ class ModuleOption:
         else :
             self.http = urllib3.PoolManager()
 
+        # file_stroge is precisely the caching layer, which is the real resource acquisition layer
+        self.rss3_stroge = None
         # Update cache used to record the current rss operation
         self.file_update_tag = set()
 

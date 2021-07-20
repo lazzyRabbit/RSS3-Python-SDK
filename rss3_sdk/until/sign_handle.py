@@ -14,7 +14,7 @@ def sign(irss3_data, private_key) :
     if irss3_data == None or private_key == None :
         return None
 
-    irss3_json_msg = data_handle.irss3_data_dump_handle(irss3_data)
+    irss3_json_msg = data_handle.rss3_data_dump_handle(irss3_data)
     message = encode_defunct(text = irss3_json_msg)
 
     return w3.eth.account.sign_message(message, private_key).signature.hex()

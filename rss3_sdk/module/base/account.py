@@ -1,7 +1,5 @@
 import hexbytes
 
-from rss3_sdk.module.rss3 import base
-
 from eth_keys import (
     keys
 )
@@ -11,8 +9,7 @@ from eth_account import (
 )
 
 class Account():
-    def __init__(self, option, private_key = None):
-        base.BaseModule.__init__(self, option)
+    def __init__(self, private_key = None):
         self.private_key = private_key
         self.address = None
         # New account means that you can’t get it online

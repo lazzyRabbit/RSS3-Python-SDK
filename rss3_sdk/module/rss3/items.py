@@ -1,9 +1,10 @@
-from rss3_sdk.module.rss3 import base
+from rss3_sdk.module.rss3 import (
+    base as rss3_base
+)
 
-
-class Items(base.BaseModule):
+class Items(rss3_base.BaseModule):
     def __init__(self, option):
-        base.BaseModule.__init__(self, option)
+        super().__init__(option)
 
     def get(self):
         pass

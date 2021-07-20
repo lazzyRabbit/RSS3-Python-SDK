@@ -1,7 +1,9 @@
 import json
 import urllib3
 
-from rss3_sdk.module.rss3 import base
+from rss3_sdk.module.rss3 import (
+    base as rss3_base
+)
 
 from rss3_sdk.until import (
     sign_handle,
@@ -10,9 +12,13 @@ from rss3_sdk.until import (
     rss3_obj_handle
 )
 
-class File(base.BaseModule):
+import logging
+logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(levelname)s - %(lineno)s - %(message)s')
+logger = logging.getLogger(__name__)
+
+class File(rss3_base.BaseModule):
     def __init__(self, option):
-        super().__init__(self, option)
+        super().__init__(option)
 
     def get(self, file_id):
         if file_id == None:
