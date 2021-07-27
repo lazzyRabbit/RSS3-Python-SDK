@@ -17,7 +17,8 @@ SDK version: 0.1.0-alpha
 ### Account
 
 ```python
-    from rss3_sdk import rss3_account
+
+from rss3_sdk.until import account
 ```
 
 #### Generate a new account

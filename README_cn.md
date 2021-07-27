@@ -17,7 +17,8 @@ SDK版本：0.1.0-alpha版
 ### Account
 
 ```python
-    from rss3_sdk import rss3_account
+
+from rss3_sdk.module.base import account
 ```
 
 #### 生成一个新的账户
